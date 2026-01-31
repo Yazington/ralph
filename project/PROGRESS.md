@@ -27,3 +27,6 @@
 - Implemented spacing+shape domain helpers with the 4-32px calm spacing ladder, 16px panel and 10px control radii, plus the 1px #2B2C2D at 40% border descriptor, and backed them with Vitest coverage so spec 0005 is enforceable.
 - Hit the token read limit when listing `project/tests`, so target specific files or globs instead of dumping the full directory next time (session ses_3e9b625dbffeePHNMPxMDgzhx5).
 - Logged the 0009 empty-state nuance that filter-empty views must link back to the All filter while the no-task view shows the demo task, so CTA metadata was added to `deriveEmptyState` to keep that behavior testable.
+- Hit the token threshold again when globbing `project/domain_types/*`, so keep fetching individual files directly instead of listing the folder (session ses_3e9b3d7e4ffeuzNaVupmSXGfDb).
+- Captured the build-dev spec instruction to run `pnpm install`, boot Vite via `pnpm run dev`, and enforce lint/typecheck fixes so the workflow matches the tech stack brief.
+- Hit the token limit when trying to read all of `project/requirements.md` in one go (session ses_3e9adc5d9ffeSvHle4cGQgz6T4), so keep using targeted slices for that file.
