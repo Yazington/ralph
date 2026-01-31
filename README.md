@@ -15,8 +15,8 @@ TECH_STACK.md is copy pasted into impl and research.
 ## Requirements
 
 - Python 3.12+
-- OpenCode CLI installed and available on `PATH` (or set `OPENCODE_CMD` to its full path)
-- Git (used by the loops for checkpoint commits)
+- OpenCode CLI installed and available on `PATH` (or set `OPENCODE_CMD` to its full path) and needs to be authenticated with preferred provider.
+- Git (used by the loops for checkpoint commits).
 
 Optional (if you want web browsing/testing in the loops):
 
