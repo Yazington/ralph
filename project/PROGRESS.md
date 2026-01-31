@@ -41,3 +41,8 @@
 - Learned the interaction-and-styling brief adds that completed todos should feel stacked beneath the viewport while active items stay up top, so drag/drop ordering needs to reinforce that vertical separation.
 - Noticed the viewport preset buttons still lean on color shifts and sub-40px padding to signal selection, so spec 0010 accessibility work needs visual/state reinforcements plus larger hit targets in the preview UI.
 - Hit the token limit when listing `project/src`, so access specific files directly instead of dumping the entire directory (session ses_3e998b53affehLbDnlF7u2SuBt).
+- Fixed lint errors in App.tsx by removing unused imports (KeyboardEvent, auditAccessibility) and unused variables (accessibilityViolations, selectedViewportAnnouncement, handlePresetKeyDown, activePreset, accessibilityControls).
+- Replaced the spec preview UI with the actual TODO app per interaction-and-styling spec, implementing Composer (input + Add button), TodoItem (checkbox, title, edit/delete icons), and Footer (count + filter pills).
+- Added drag-and-drop using HTML5 drag API with reorderTasksByDrag helper, ensuring completed items stack below active ones via deriveStackedTaskPlan offsets.
+- Integrated domain helpers: task operations, interactions planning (Enter/Escape keys), focus rings using accent cyan, and filtering by All/Active/Completed.
+- Removed viewport presets and showcase panels to keep the UI calm and focused solely on the TODO experience per spec.
