@@ -36,10 +36,21 @@ export interface DeletionPlan {
 }
 
 export function deriveInputFeedback(value: string, attemptedSubmit: boolean): InputFeedbackState {
+  const trimmed = value.trim();
+  const hasValue = trimmed.length > 0;
+  if (!hasValue && attemptedSubmit) {
+    return {
+      kind: 'inputError',
+      borderTone: 'subtle',
+      helperText: 'Add a task title to continue.',
+      canSubmit: false,
+    };
+  }
+
   return {
     kind: 'idle',
     borderTone: 'none',
-    canSubmit: value.trim().length > 0,
+    canSubmit: hasValue,
   };
 }
 
@@ -48,13 +59,17 @@ export function planOptimisticSave(
   updatedTask: Task,
   requestId: string,
 ): OptimisticSavePlan {
+  const nextTasks = tasks.some((task) => task.id === updatedTask.id)
+    ? (tasks.map((task) => (task.id === updatedTask.id ? updatedTask : task)) as Task[])
+    : ([...tasks, updatedTask] as Task[]);
+
   return {
-    nextTasks: tasks.slice() as Task[],
+    nextTasks,
     feedback: {
       kind: 'saving',
-      optimistic: false,
-      blocking: true,
-      showSpinner: true,
+      optimistic: true,
+      blocking: false,
+      showSpinner: false,
       requestId,
     },
   };
@@ -65,13 +80,19 @@ export function scheduleDeletionWithUndo(
   taskId: TaskId,
   now: Timestamp,
 ): DeletionPlan {
+  const taskSnapshot = tasks.find((task) => task.id === taskId);
+  const nextTasks = tasks.filter((task) => task.id !== taskId) as Task[];
+  const windowMs = 5000;
+  const expiresAt = new Date(new Date(now).getTime() + windowMs).toISOString();
+
   return {
-    nextTasks: tasks.slice() as Task[],
+    nextTasks,
     toast: {
       kind: 'undoToast',
-      message: 'Task deleted',
-      durationMs: 0,
-      expiresAt: now,
+      message: 'Task removed. Undo?',
+      durationMs: windowMs,
+      expiresAt,
+      taskSnapshot,
     },
   };
 }
