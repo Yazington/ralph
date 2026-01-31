@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { reorderTasksByDrag, getDragVisualPlan } from '../domain_types/drag-and-drop';
+import { reorderTasksByDrag, getDragVisualPlan, deriveStackedTaskPlan } from '../domain_types/drag-and-drop';
 import { createTask, Task } from '../domain_types/task-domain';
 
 function buildTasks(): Task[] {
@@ -47,5 +47,27 @@ describe('Drag visual plan (drag-and-drop spec)', () => {
     expect(new Set(ids).size).toBeLessThanOrEqual(plan.allowedSurfaceIds.length);
     expect(plan.allowedSurfaceIds).toEqual(['deepPanel', 'panelAlt', 'panelTeal']);
     expect(plan.accentHex).toBe('#7299A2');
+  });
+});
+
+describe('Stacked task plan (drag-and-drop spec)', () => {
+  test('keeps active tasks on top and offsets completed tasks so they feel tucked below', () => {
+    const tasks = [
+      createTask({ id: 'active-1', title: 'First', createdAt: '2026-01-01T08:00:00.000Z', order: 0 }),
+      createTask({ id: 'done-1', title: 'Second', createdAt: '2026-01-01T09:00:00.000Z', order: 1, completed: true }),
+      createTask({ id: 'active-2', title: 'Third', createdAt: '2026-01-01T10:00:00.000Z', order: 2 }),
+      createTask({ id: 'done-2', title: 'Fourth', createdAt: '2026-01-01T11:00:00.000Z', order: 3, completed: true }),
+    ];
+
+    const plan = deriveStackedTaskPlan(tasks);
+    expect(plan.descriptors.map((descriptor) => descriptor.id)).toEqual([
+      'active-1',
+      'active-2',
+      'done-1',
+      'done-2',
+    ]);
+    const completed = plan.descriptors.filter((descriptor) => descriptor.stackRole === 'completed');
+    expect(completed.map((descriptor) => descriptor.offsetPx)).toEqual([12, 24]);
+    expect(plan.completedOffsetStepPx).toBe(12);
   });
 });

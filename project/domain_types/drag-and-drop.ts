@@ -1,5 +1,6 @@
 import { getColorPalette, SurfaceColorToken, SurfaceTokenId } from './color-palette';
 import { Task, TaskId } from './task-domain';
+import { SpacingToken } from './spacing-shape';
 
 export interface DragVisualPlan {
   restingSurface: SurfaceColorToken;
@@ -18,7 +19,21 @@ export interface DragReorderResult {
   changed: boolean;
 }
 
+export interface StackedTaskDescriptor {
+  id: TaskId;
+  order: number;
+  stackRole: 'active' | 'completed';
+  offsetPx: number;
+}
+
+export interface StackedTaskPlan {
+  descriptors: StackedTaskDescriptor[];
+  completedOffsetStepPx: SpacingToken;
+  description: string;
+}
+
 const LIMITED_SURFACE_IDS: SurfaceTokenId[] = ['deepPanel', 'panelAlt', 'panelTeal'];
+const COMPLETED_STACK_OFFSET: SpacingToken = 12;
 
 function clampIndex(index: number, length: number): number {
   if (length === 0) {
@@ -84,5 +99,38 @@ export function reorderTasksByDrag(
     toIndex: normalizedDestination,
     tasks: reordered,
     changed: fromIndex !== normalizedDestination,
+  };
+}
+
+export function deriveStackedTaskPlan(tasks: readonly Task[]): StackedTaskPlan {
+  if (tasks.length === 0) {
+    return {
+      descriptors: [],
+      completedOffsetStepPx: COMPLETED_STACK_OFFSET,
+      description: 'No tasks yet. Active slots stay ready while the completed stack stays empty.',
+    };
+  }
+
+  const ordered = tasks.slice().sort((a, b) => a.order - b.order);
+  const active = ordered.filter((task) => !task.completed);
+  const completed = ordered.filter((task) => task.completed);
+  let completedIndex = 0;
+
+  const descriptors: StackedTaskDescriptor[] = [...active, ...completed].map((task, index) => {
+    const stackRole: 'active' | 'completed' = task.completed ? 'completed' : 'active';
+    const offsetPx = stackRole === 'completed' ? (++completedIndex) * COMPLETED_STACK_OFFSET : 0;
+    return {
+      id: task.id,
+      order: index,
+      stackRole,
+      offsetPx,
+    };
+  });
+
+  return {
+    descriptors,
+    completedOffsetStepPx: COMPLETED_STACK_OFFSET,
+    description:
+      'Active todos stay flush at the top while completed ones gain incremental offsets so the stack feels tucked under the panel.',
   };
 }
