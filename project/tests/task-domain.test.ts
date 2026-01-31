@@ -8,6 +8,8 @@ import {
   removeTask,
   toggleTaskCompletion,
   updateTask,
+  deriveEmptyState,
+  EMPTY_STATE_SAMPLE_TASK,
 } from '../domain_types/task-domain';
 
 const baseTimestamp = '2026-01-31T08:00:00.000Z';
@@ -91,5 +93,32 @@ describe('Task domain logic (spec 0003)', () => {
     const pruned = removeTask(tasks, activeTask.id);
     expect(pruned).toEqual([completedTask]);
     expect(tasks).toEqual([activeTask, completedTask]);
+  });
+});
+
+describe('deriveEmptyState (spec 0009)', () => {
+  test('returns noTasks when the list is empty', () => {
+    const emptyState = deriveEmptyState([], 'all');
+    expect(emptyState).not.toBeNull();
+    expect(emptyState?.kind).toBe('noTasks');
+    expect(emptyState?.sampleTask).toBe(EMPTY_STATE_SAMPLE_TASK);
+    expect(emptyState?.actionLabel).toBe('Add your first task');
+  });
+
+  test('returns filterEmpty when the current filter has no matches', () => {
+    const emptyState = deriveEmptyState([completedTask], 'active');
+    expect(emptyState?.kind).toBe('filterEmpty');
+    expect(emptyState?.actionLabel).toBe('Show all tasks');
+  });
+
+  test('returns allComplete when all tasks are done under All filter', () => {
+    const emptyState = deriveEmptyState([completedTask], 'all');
+    expect(emptyState?.kind).toBe('allComplete');
+    expect(emptyState?.message).toContain('All clear');
+  });
+
+  test('returns null when the filter still yields tasks', () => {
+    const emptyState = deriveEmptyState([activeTask, completedTask], 'active');
+    expect(emptyState).toBeNull();
   });
 });

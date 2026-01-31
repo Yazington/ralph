@@ -14,6 +14,15 @@ export interface Task {
 
 export type TaskFilter = 'all' | 'active' | 'completed';
 
+export type EmptyStateKind = 'noTasks' | 'filterEmpty' | 'allComplete';
+
+export interface EmptyState {
+  kind: EmptyStateKind;
+  message: string;
+  actionLabel?: string;
+  sampleTask?: Task;
+}
+
 export interface TaskCreationInput {
   id: TaskId;
   title: string;
@@ -95,4 +104,42 @@ export function filterTasks(tasks: readonly Task[], filter: TaskFilter): Task[] 
     default:
       return tasks.slice();
   }
+}
+
+export const EMPTY_STATE_SAMPLE_TASK = createTask({
+  id: 'empty-state-example',
+  title: 'Pause and plan a calm task',
+  createdAt: '2026-01-01T08:00:00.000Z',
+  description: 'This example shows how a tranquil first task would appear.',
+  order: 0,
+});
+
+export function deriveEmptyState(tasks: readonly Task[], filter: TaskFilter): EmptyState | null {
+  if (tasks.length === 0) {
+    return {
+      kind: 'noTasks',
+      message: 'Calm list. Add a gentle task to get started.',
+      sampleTask: EMPTY_STATE_SAMPLE_TASK,
+      actionLabel: 'Add your first task',
+    };
+  }
+
+  const filtered = filterTasks(tasks, filter);
+  if (filtered.length === 0) {
+    return {
+      kind: 'filterEmpty',
+      message: 'No tasks here. Switch back to All to see everything.',
+      actionLabel: 'Show all tasks',
+    };
+  }
+
+  const allComplete = tasks.every((task) => task.completed);
+  if (filter === 'all' && allComplete) {
+    return {
+      kind: 'allComplete',
+      message: 'All clear. Nothing to do right now.',
+    };
+  }
+
+  return null;
 }
