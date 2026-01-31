@@ -30,3 +30,6 @@
 - Hit the token threshold again when globbing `project/domain_types/*`, so keep fetching individual files directly instead of listing the folder (session ses_3e9b3d7e4ffeuzNaVupmSXGfDb).
 - Captured the build-dev spec instruction to run `pnpm install`, boot Vite via `pnpm run dev`, and enforce lint/typecheck fixes so the workflow matches the tech stack brief.
 - Hit the token limit when trying to read all of `project/requirements.md` in one go (session ses_3e9adc5d9ffeSvHle4cGQgz6T4), so keep using targeted slices for that file.
+- Learned during `pnpm typecheck` that `addTask` can only return mutable arrays when it clones the readonly input, so we now slice before returning when the ID already exists.
+- Noted that Vitest's jsdom environment is required for the domain helper suites, so `jsdom` lives in devDependencies to keep `pnpm test` aligned with the build-dev spec.
+- Captured that the new Vite + React + Tailwind scaffold consumes domain helpers via the `@domain` alias so `pnpm dev`, `pnpm lint`, and `pnpm typecheck` share the same source of truth.

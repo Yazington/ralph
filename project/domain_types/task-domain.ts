@@ -56,7 +56,7 @@ export function createTask(input: TaskCreationInput): Task {
 
 export function addTask(tasks: readonly Task[], nextTask: Task): Task[] {
   if (tasks.some((task) => task.id === nextTask.id)) {
-    return tasks;
+    return tasks.slice();
   }
   return [...tasks, nextTask];
 }
