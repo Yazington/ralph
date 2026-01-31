@@ -19,6 +19,7 @@ Current Files(create them if they dont exist):
   - github mcp to get latest issues on 3rd party libs/deps
   - playwright mcp to test UI.
   - if you need more, you may write it down into NEEDS.md (create if doesnt exist).
+- the tests you create can test anything. UI, not UI, really anything -> this is important.
 
 Given a specific subject/s in requirements.md, you can create TDD tests (as much as possible), you can append to requirements.md, you can research better testing tools and add them to NEEDS.md.
 
