@@ -7,6 +7,7 @@ import threading
 import time
 from pathlib import Path
 
+
 def _resolve_path(base_dir: Path, candidate: str) -> Path:
     path = Path(candidate)
     return path if path.is_absolute() else base_dir / path
@@ -34,14 +35,16 @@ def _parse_extra_args(value: str) -> list[str]:
     return shlex.split(value, posix=(os.name != "nt"))
 
 
-def _start_stream_thread(stream, prefix: str, complete_event, usage_event, last_output, lock):
+def _start_stream_thread(
+    stream, prefix: str, complete_event, usage_event, last_output, lock
+):
     def _run():
         for line in stream:
             if not line:
                 break
-            if '<done>COMPLETE</done>' in line:
+            if "<done>COMPLETE</done>" in line:
                 complete_event.set()
-            if 'opencode run [message..]' in line:
+            if "opencode run [message..]" in line:
                 usage_event.set()
             with lock:
                 last_output[0] = time.monotonic()
@@ -59,7 +62,7 @@ def _start_stream_thread(stream, prefix: str, complete_event, usage_event, last_
     return thread
 
 
-def main(max_iterations=50, tech_stack_file='TECH_STACK.md'):
+def main(max_iterations=50, tech_stack_file="TECH_STACK.md"):
     """
     Ralph-like loop for OpenCode: Research phase.
     Generates requirements, searches (via fetch tool), TDD/tests, SDK.
@@ -71,34 +74,36 @@ def main(max_iterations=50, tech_stack_file='TECH_STACK.md'):
     # Load tech stack
     try:
         tech_stack_path = _resolve_path(base_dir, tech_stack_file)
-        with tech_stack_path.open('r', encoding='utf-8') as f:
+        with tech_stack_path.open("r", encoding="utf-8") as f:
             tech_stack = f.read()
     except FileNotFoundError:
         print(f"Error: {tech_stack_file} not found.")
         sys.exit(1)
-    
+
     # Load fixed prompt
     try:
-        prompt_path = base_dir / 'PROMPT_research.md'
-        with prompt_path.open('r', encoding='utf-8') as f:
+        prompt_path = base_dir / "PROMPT_research.md"
+        with prompt_path.open("r", encoding="utf-8") as f:
             base_prompt = f.read().format(tech_stack=tech_stack)
     except FileNotFoundError:
         print("Error: PROMPT_research.md not found.")
         sys.exit(1)
-    
-    opencode_cmd = os.environ.get('OPENCODE_CMD', 'opencode')
+
+    opencode_cmd = os.environ.get("OPENCODE_CMD", "opencode")
     opencode_path = _resolve_opencode(opencode_cmd)
     if opencode_path is None:
         print(f"Error: '{opencode_cmd}' not found in PATH.")
-        print("Install OpenCode or set OPENCODE_CMD to the full path of the executable.")
+        print(
+            "Install OpenCode or set OPENCODE_CMD to the full path of the executable."
+        )
         sys.exit(1)
-    extra_args = _parse_extra_args(os.environ.get('OPENCODE_ARGS', ''))
+    extra_args = _parse_extra_args(os.environ.get("OPENCODE_ARGS", ""))
 
-    timeout = int(os.environ.get('OPENCODE_TIMEOUT', '0'))
+    timeout = int(os.environ.get("OPENCODE_TIMEOUT", "0"))
     timeout = timeout if timeout > 0 else None
-    heartbeat = int(os.environ.get('OPENCODE_HEARTBEAT', '10'))
+    heartbeat = int(os.environ.get("OPENCODE_HEARTBEAT", "10"))
     heartbeat = heartbeat if heartbeat > 0 else None
-    show_cmd = os.environ.get('OPENCODE_SHOW_CMD', '1') not in ('0', 'false', 'False')
+    show_cmd = os.environ.get("OPENCODE_SHOW_CMD", "1") not in ("0", "false", "False")
 
     iteration = 0
     while iteration < max_iterations:
@@ -107,17 +112,17 @@ def main(max_iterations=50, tech_stack_file='TECH_STACK.md'):
             print(f"OpenCode: {opencode_path}")
             print(f"Working dir: {base_dir}")
             print(f"Prompt size: {len(base_prompt)} chars")
-        
+
         # Run OpenCode non-interactive
         try:
             process = subprocess.Popen(
-                [opencode_path, 'run', base_prompt, *extra_args],
+                [opencode_path, "run", base_prompt, *extra_args],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True,
                 cwd=base_dir,
-                encoding='utf-8',
-                errors='replace',
+                encoding="utf-8",
+                errors="replace",
             )
             last_output = [time.monotonic()]
             lock = threading.Lock()
@@ -125,9 +130,27 @@ def main(max_iterations=50, tech_stack_file='TECH_STACK.md'):
             usage_event = threading.Event()
             threads = []
             if process.stdout is not None:
-                threads.append(_start_stream_thread(process.stdout, "", complete_event, usage_event, last_output, lock))
+                threads.append(
+                    _start_stream_thread(
+                        process.stdout,
+                        "",
+                        complete_event,
+                        usage_event,
+                        last_output,
+                        lock,
+                    )
+                )
             if process.stderr is not None:
-                threads.append(_start_stream_thread(process.stderr, "", complete_event, usage_event, last_output, lock))
+                threads.append(
+                    _start_stream_thread(
+                        process.stderr,
+                        "",
+                        complete_event,
+                        usage_event,
+                        last_output,
+                        lock,
+                    )
+                )
 
             timed_out = False
             start_time = time.monotonic()
@@ -140,7 +163,9 @@ def main(max_iterations=50, tech_stack_file='TECH_STACK.md'):
                     with lock:
                         elapsed = time.monotonic() - last_output[0]
                     if elapsed >= heartbeat:
-                        print(f"... opencode still running ({int(elapsed)}s since last output)")
+                        print(
+                            f"... opencode still running ({int(elapsed)}s since last output)"
+                        )
                         with lock:
                             last_output[0] = time.monotonic()
                 time.sleep(0.5)
@@ -164,31 +189,41 @@ def main(max_iterations=50, tech_stack_file='TECH_STACK.md'):
             if process.returncode != 0:
                 print(f"Error: opencode exited with code {process.returncode}")
                 if usage_event.is_set():
-                    print("Error: opencode run did not receive a message. Check the command arguments.")
+                    print(
+                        "Error: opencode run did not receive a message. Check the command arguments."
+                    )
                     break
         except KeyboardInterrupt:
             print("Research loop interrupted by user.")
             break
         except Exception as e:
             print(f"Error: {e}")
-        
+
         # Commit changes (AI handles via bash tool in prompt)
         subprocess.run(
-            ['git', '-C', str(repo_root), 'add', '.'],
+            ["git", "-C", str(repo_root), "add", "."],
             check=False,
             capture_output=True,
             text=True,
         )
         subprocess.run(
-            ['git', '-C', str(repo_root), 'commit', '-m', f"Research iteration {iteration + 1}"],
+            [
+                "git",
+                "-C",
+                str(repo_root),
+                "commit",
+                "-m",
+                f"Research iteration {iteration + 1}",
+            ],
             check=False,
             capture_output=True,
             text=True,
         )
-        
+
         iteration += 1
-    
+
     print("Research loop ended.")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()

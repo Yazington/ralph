@@ -5,8 +5,6 @@
 # Persistent Context (Update Files as Needed)
 
 Requirements: Read from ../research/requirements.md
-Tests: Run from ../research/tests/
-SDK: Use from ../research/sdk/ if available
 
 Current Files:
 
@@ -24,5 +22,7 @@ Git: Commit after each step with "Impl: [step]".
 </context>
 
 <instruction>
-You are restricted to the ./impl/ folder - read from ../research/ but do not modify it. Review context. Implement the highest priority To-Do item. Handle 3rd-party issues with internet searches (write/exec code to fetch info). Ensure all tests pass. If requirements fully satisfied and tests green, output <done>COMPLETE</done>.
+You are restricted to the ./impl/ folder. Implement the highest priority To-Do item. Handle 3rd-party issues with internet searches (write/exec code to fetch info). Ensure all tests pass. If requirements fully satisfied and tests green, output. you can create progress.md to track your progress and refer to it when needed. 
+To verify all your code is complete, run tests with tests mcp server. 
+<done>COMPLETE</done>.
 </instruction>

@@ -24,5 +24,6 @@ Git: Commit after each step with "Research: [step]".
 </context>
 
 <instruction>
-You are restricted to the ./research/ folder - do not access or modify anything outside it. Review context. Perform the highest priority To-Do item. Use internet search via code (e.g., import requests; response = requests.get('https://api.example.com')). Focus on TDD: Write tests first, then minimal code to pass. If all To-Do complete, output <done>COMPLETE</done>.
+You are restricted to the ./research/ folder - do not access or modify anything outside it. Review context. Perform the highest priority To-Do item. Use internet search via your MCP servers. Focus on TDD for what is asked by you (project overview): Write tests first, then minimal code to pass. you can create progress.md to track your progress and refer to it when needed. 
+If all To-Do complete and all tests are implemented for the project, output <done>COMPLETE</done>.
 </instruction>
