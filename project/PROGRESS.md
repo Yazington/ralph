@@ -36,3 +36,6 @@
 - Hit the token read limit when opening `project/src/App.tsx`, so target smaller sections instead of the full file next time (session ses_3e9a7ca8affe3uV2BEMGMrzywM).
 - Learned that `project/src/App.tsx` currently renders the spec-driven preview panels (viewport toggles, layout metadata, palette tokens, and typography plans) instead of the actual task UI, so future wiring work must integrate the helpers into real components.
 - Discovered the interactions helper still emits `#0FA9E6` for focus rings, which drifts from the shared accent cyan `#7299A2` in the color palette, so spec 0007 needs that alignment.
+- Hit the token limit when trying to open `project/tests/components.test.ts`, so keep grabbing targeted slices of that file instead of the entire suite (session ses_3e9a1e773ffea2bOue6o6oKIB4).
+- Logged the drag-and-drop spec: todos must support drag reordering without adding new visual themes—reuse the calm palette defined elsewhere so the app stays consistent.
+- Learned the interaction-and-styling brief adds that completed todos should feel stacked beneath the viewport while active items stay up top, so drag/drop ordering needs to reinforce that vertical separation.

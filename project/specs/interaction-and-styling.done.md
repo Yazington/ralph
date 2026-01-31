@@ -1,0 +1,5 @@
+- user should be able to drag and drop todos
+- we dont want all styling showdown on the page. We only want a TODO app using the specs described with the styling in other files!
+- We dont want too many styling variations. We only want some and they need to be consistent.
+- We should be able to drag and drop todos easily.
+- todos that are done should look like they are stacked below the page and todos that are not done should be at the top of the page.
