@@ -59,6 +59,9 @@ def main(max_iterations=50, tech_stack_file='TECH_STACK.md'):
         print("Install OpenCode or set OPENCODE_CMD to the full path of the executable.")
         sys.exit(1)
 
+    timeout = int(os.environ.get('OPENCODE_TIMEOUT', '0'))
+    timeout = timeout if timeout > 0 else None
+
     iteration = 0
     while iteration < max_iterations:
         print(f"Iteration {iteration + 1}: Starting implementation loop...")
@@ -69,18 +72,27 @@ def main(max_iterations=50, tech_stack_file='TECH_STACK.md'):
                 [opencode_path, '-p', base_prompt, '-q'],
                 capture_output=True,
                 text=True,
-                check=True,
+                check=False,
                 cwd=base_dir,
+                timeout=timeout,
             )
-            output = result.stdout
-            print(output)  # For monitoring
+            stdout = result.stdout or ""
+            stderr = result.stderr or ""
+            if stdout:
+                print(stdout)  # For monitoring
+            if stderr:
+                print(stderr)
             
             # Check for completion tag
-            if '<done>COMPLETE</done>' in output:
+            if '<done>COMPLETE</done>' in stdout:
                 print("Implementation complete!")
                 break
-        except subprocess.CalledProcessError as e:
-            print(f"Error: {e.stderr}")
+            if result.returncode != 0:
+                print(f"Error: opencode exited with code {result.returncode}")
+        except subprocess.TimeoutExpired:
+            print("Error: opencode timed out.")
+        except Exception as e:
+            print(f"Error: {e}")
         
         # Commit changes
         subprocess.run(
