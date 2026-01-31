@@ -2,6 +2,7 @@ import os
 import sys
 import subprocess
 import shutil
+import shlex
 from pathlib import Path
 
 def _resolve_path(base_dir: Path, candidate: str) -> Path:
@@ -23,6 +24,12 @@ def _resolve_opencode(cmd: str) -> str | None:
         if result.stdout:
             return result.stdout.splitlines()[0].strip()
     return None
+
+
+def _parse_extra_args(value: str) -> list[str]:
+    if not value:
+        return []
+    return shlex.split(value, posix=(os.name != "nt"))
 
 
 def main(max_iterations=50, tech_stack_file='TECH_STACK.md'):
@@ -58,6 +65,7 @@ def main(max_iterations=50, tech_stack_file='TECH_STACK.md'):
         print(f"Error: '{opencode_cmd}' not found in PATH.")
         print("Install OpenCode or set OPENCODE_CMD to the full path of the executable.")
         sys.exit(1)
+    extra_args = _parse_extra_args(os.environ.get('OPENCODE_ARGS', ''))
 
     timeout = int(os.environ.get('OPENCODE_TIMEOUT', '0'))
     timeout = timeout if timeout > 0 else None
@@ -69,12 +77,14 @@ def main(max_iterations=50, tech_stack_file='TECH_STACK.md'):
         # Run OpenCode non-interactive
         try:
             result = subprocess.run(
-                [opencode_path, '-p', base_prompt, '-q'],
+                [opencode_path, 'run', '--prompt', base_prompt, *extra_args],
                 capture_output=True,
                 text=True,
                 check=False,
                 cwd=base_dir,
                 timeout=timeout,
+                encoding='utf-8',
+                errors='replace',
             )
             stdout = result.stdout or ""
             stderr = result.stderr or ""
@@ -82,7 +92,7 @@ def main(max_iterations=50, tech_stack_file='TECH_STACK.md'):
                 print(stdout)  # For monitoring
             if stderr:
                 print(stderr)
-            
+
             # Check for completion tag
             if '<done>COMPLETE</done>' in stdout:
                 print("Implementation complete!")
@@ -91,6 +101,9 @@ def main(max_iterations=50, tech_stack_file='TECH_STACK.md'):
                 print(f"Error: opencode exited with code {result.returncode}")
         except subprocess.TimeoutExpired:
             print("Error: opencode timed out.")
+        except KeyboardInterrupt:
+            print("Implementation loop interrupted by user.")
+            break
         except Exception as e:
             print(f"Error: {e}")
         
