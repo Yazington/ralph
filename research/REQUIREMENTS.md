@@ -17,6 +17,81 @@
 - Cross-device synchronization
 - User authentication (optional for multi-device sync)
 
+## Feature Details
+
+### Task Creation
+- **Title**: Required, max 200 characters.
+- **Description**: Optional, markdown support.
+- **Due date**: Optional, with time component; can be relative (today, tomorrow, next week).
+- **Priority**: Low, medium, high (color-coded).
+- **Tags**: Multiple tags, autocomplete from existing tags.
+- **Natural language input**: Parse phrases like "Buy milk tomorrow high priority" to pre-fill fields.
+
+### Subtasks
+- Unlimited nesting depth (but recommend max 5 for usability).
+- Subtasks inherit parent's due date (optional override).
+- Completion of all subtasks marks parent as complete (configurable).
+- Subtask drag-and-drop within parent.
+
+### Recurring Tasks
+- Supports iCalendar RFC recurrence rules (via rrule.js).
+- Frequencies: daily, weekly, monthly, yearly, custom.
+- Interval (every N days/weeks/months), end date, occurrence count.
+- By weekday (e.g., every Monday, Wednesday), by month day, by year day.
+- Skip weekends option.
+- Visual recurrence rule builder UI.
+
+### Reminders and Notifications
+- Multiple reminders per task.
+- Relative times (e.g., 15 minutes before, 1 day before) or absolute datetime.
+- Notification channels: in-app (desktop/mobile), browser push, email (if user configured).
+- Snooze reminders (5 min, 10 min, 1 hour, tomorrow).
+- Location-based reminders (geofencing) – optional.
+
+### Views
+- **List view**: Sortable columns, expandable tasks.
+- **Calendar view**: Day, week, month, agenda; drag tasks to reschedule.
+- **Kanban board**: Columns based on status (To Do, In Progress, Done) or custom.
+- **Daily/weekly planner**: Time-blocking integration with calendar events.
+- **Eisenhower matrix**: Urgent/important quadrants.
+
+### Filtering and Sorting
+- Filter by due date range, priority, tags, status (complete/incomplete), assignee.
+- Save filters as "Smart Lists".
+- Sort by due date, priority, creation date, title, custom order.
+- Search within filtered results.
+
+### Search
+- Full-text search across title, description, tags, comments.
+- Boolean operators (AND, OR, NOT).
+- Search history and saved searches.
+
+### Drag-and-Drop
+- Reorder tasks within list.
+- Move tasks between lists/boards.
+- Assign priority by dragging vertically.
+
+### Archive and Deletion
+- Archive completed tasks after N days (configurable).
+- Permanent deletion after archive period.
+- Restore archived tasks.
+
+### Import/Export
+- CSV format for spreadsheet compatibility.
+- JSON format for backup and migration.
+- Import from popular apps (Todoist, Google Tasks, Microsoft To Do) via CSV.
+
+### Offline Support & Sync
+- All data stored locally in IndexedDB.
+- Background sync when online.
+- Conflict resolution (last write wins or manual merge).
+- Multi-device sync requires user account.
+
+### User Authentication
+- Optional for sync across devices.
+- Social login (Google, GitHub) and email/password.
+- End-to-end encryption for sensitive data.
+
 ## Collaboration Features (Optional)
 - Shared task lists
 - Assign tasks to users

@@ -2,6 +2,20 @@
 
 ## Date: 2026-01-31
 
+### Research on modern TODO app features and best practices:
+- Conducted web search for modern TODO app features, best practices, and popular apps in 2025-2026.
+- Discovered key features: AI integration, natural language input, focus tools (Pomodoro timer, habit tracking), location-based reminders, smart lists, calendar integration, collaboration features, cross-platform sync, offline support.
+- Noted popular apps: Todoist, TickTick, Microsoft To Do, Any.do, Asana, Trello, Linear, Notion.
+- Identified categories: list makers, daily planner apps, hybrid applications.
+- Extracted best practices: mobile app functionality, real-time collaboration, competitive pricing, separate lists, additional context, visual organization, deadline orientation.
+
+### Next steps:
+- Update REQUIREMENTS.md with detailed feature specifications based on research.
+- Research rrule.js integration for advanced recurrence patterns.
+- Consider adding AI features to NEEDS.md.
+
+## Date: 2026-01-31
+
 ### Discoveries about recurrence rules:
 - Researched rrule.js library for iCalendar RFC recurrence rule implementation.
 - Found examples for daily, weekly, monthly, yearly frequencies with interval, end date, byWeekDay.
