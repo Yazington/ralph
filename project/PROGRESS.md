@@ -24,3 +24,4 @@
 - Hit the command token cap when listing `project/domain_types`, so future passes need narrower glob patterns or direct file reads instead of dumping the whole directory.
 - Introduced color palette domain helpers that freeze the base/deep/alt/teal surfaces, mint and muted text tones, the translucent #2B2C2D divider, and the shared accent cyan usage so spec 0002 remains testable.
 - Hit the token cap again when globbing `project/domain_types/**`, so future passes must keep using targeted file reads or narrower globs (session ses_3e9b8402cffeKtrkqzdhd83UNY).
+- Implemented spacing+shape domain helpers with the 4-32px calm spacing ladder, 16px panel and 10px control radii, plus the 1px #2B2C2D at 40% border descriptor, and backed them with Vitest coverage so spec 0005 is enforceable.
