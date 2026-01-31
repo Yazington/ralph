@@ -1,6 +1,6 @@
 import type { Plugin } from "@opencode-ai/plugin";
 
-const THRESHOLD = 70_000;
+const THRESHOLD = 100_000;
 
 const NODE_SCRIPT = `
 const fs=require('fs'),path=require('path'),os=require('os');

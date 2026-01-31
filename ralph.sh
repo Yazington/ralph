@@ -46,50 +46,84 @@
 MAX_ITERATIONS=200
 iteration=0
 
-echo "Starting loop..."
+# Colors (disable with NO_COLOR=1)
+if [ -t 1 ] && [ -z "$NO_COLOR" ]; then
+    C_RESET=$'\033[0m'
+    C_DIM=$'\033[2m'
+    C_BOLD=$'\033[1m'
+    C_GREEN=$'\033[32m'
+    C_YELLOW=$'\033[33m'
+    C_CYAN=$'\033[36m'
+else
+    C_RESET=''
+    C_DIM=''
+    C_BOLD=''
+    C_GREEN=''
+    C_YELLOW=''
+    C_CYAN=''
+fi
+
+title() { printf "%b\n" "${C_BOLD}${C_CYAN}$*${C_RESET}"; }
+info() { printf "%b\n" "${C_GREEN}$*${C_RESET}"; }
+warn() { printf "%b\n" "${C_YELLOW}$*${C_RESET}"; }
+muted() { printf "%b\n" "${C_DIM}$*${C_RESET}"; }
+
+info "Starting loop..."
 
 # Restrict this loop's opencode calls from touching ralph.sh or .opencode.
 OPENCODE_PERMISSION='{"read":{"*":"allow","ralph.sh":"deny",".opencode/**":"deny"},"edit":{"*":"allow","ralph.sh":"deny",".opencode/**":"deny"},"list":{"*":"allow",".opencode":"deny",".opencode/**":"deny"},"glob":{"*":"allow","*ralph.sh*":"deny","*/.opencode/*":"deny","*.opencode*":"deny"},"grep":{"*":"allow","*ralph.sh*":"deny","*.opencode*":"deny"}}'
 
-# ensure log dir exists and tee both stdout and stderr to console + log
-mkdir -p ./.ralph
-# send stdout to tee (append), and send stderr to tee as well
-exec > >(tee -a ./.ralph/run.log) 2> >(tee -a ./.ralph/run.log >&2)
+LOG_DIR="./.ralph"
+LOG_FILE="$LOG_DIR/run.txt"
+STATUS_FILE="$LOG_DIR/status.md"
+PROMPT_FILE="$LOG_DIR/generic_prompt.md"
+OPENCODE_LOG_LEVEL="${OPENCODE_LOG_LEVEL:-WARN}"
 
-#!/bin/bash
+# ensure log dir exists; keep opencode stderr in a log file
+mkdir -p "$LOG_DIR"
+touch "$LOG_FILE"
+
 while true; do
     if [ $iteration -ge $MAX_ITERATIONS ]; then
-        echo "Reached maximum iterations ($MAX_ITERATIONS). Exiting loop."
+        warn "Reached maximum iterations ($MAX_ITERATIONS). Exiting loop."
         break
     fi
 
     # CHECK STATUS FILE FOR STOP CONDITION
-    STATUS=$(grep -o 'Status: [a-zA-Z]*' STATUS.md | cut -d' ' -f2)
+    if [ ! -f "$STATUS_FILE" ]; then
+        warn "Missing $STATUS_FILE. Exiting loop."
+        break
+    fi
+    STATUS=$(grep -o 'Status: [a-zA-Z]*' "$STATUS_FILE" | cut -d' ' -f2)
+    STATUS=${STATUS:-unknown}
 
     if [ "$STATUS" = "done" ] || [ "$STATUS" = "blocked" ]; then
-        echo "Status is '$STATUS'. Exiting loop."
-        cat ./ralph/STATUS.md
+        info "Status is '$STATUS'. Exiting loop."
+        cat "$STATUS_FILE"
         break
     fi
 
-    echo ""
-    echo "======= RUNNING ITERATION $((iteration + 1)) ======="
-    echo "Current status : $STATUS"
-    echo ""
+    echo
+    title "======= RUNNING ITERATION $((iteration + 1)) ======="
+    muted "Current status: $STATUS"
+    echo
+
+    if [ ! -f "$PROMPT_FILE" ]; then
+        warn "Missing $PROMPT_FILE. Exiting loop."
+        break
+    fi
+    prompt=$(cat "$PROMPT_FILE")
     
-    prompt=$(cat ./ralph/generic_prompt.md)
-    
-    # Stage 1: Generate plan with gpt-5.2-codex
-    echo "Generating plan..."
-    plan=$(OPENCODE_PERMISSION="$OPENCODE_PERMISSION" opencode run --agent plan -m openai/gpt-5.2-codex --print-logs --log-level DEBUG "$prompt")
-    echo "Plan:"
-    echo "$plan"
-    echo ""
-    
-    # Stage 2: Execute plan with gpt-5.1-codex-mini
-    echo "Executing plan..."
-    result=$(OPENCODE_PERMISSION="$OPENCODE_PERMISSION" opencode run --agent build -m openai/gpt-5.1-codex-mini --print-logs --log-level DEBUG "$plan")
+    info "Executing build..."
+    result=$(
+        OPENCODE_PERMISSION="$OPENCODE_PERMISSION" \
+        TERM=dumb NO_COLOR=1 \
+        opencode run --agent build -m zai-coding-plan/glm-4.7 --log-level "$OPENCODE_LOG_LEVEL" "$prompt" \
+        2> >(python -c "import sys,strip_ansi; sys.stdout.write(strip_ansi.strip_ansi(sys.stdin.read()))" | tr -d '\000' >>"$LOG_FILE")
+    )
     echo "Result:"
     echo "$result"
-    echo ""
+    echo
+
+    iteration=$((iteration + 1))
 done

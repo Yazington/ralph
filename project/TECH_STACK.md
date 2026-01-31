@@ -1,3 +1,4 @@
+pnpm
 Vite
 React
 Tailwind
