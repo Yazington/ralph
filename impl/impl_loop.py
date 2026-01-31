@@ -5,6 +5,7 @@ import shutil
 import shlex
 import threading
 import time
+import json
 from pathlib import Path
 
 def _resolve_path(base_dir: Path, candidate: str) -> Path:
@@ -93,6 +94,26 @@ def main(max_iterations=50, tech_stack_file='TECH_STACK.md'):
         print("Install OpenCode or set OPENCODE_CMD to the full path of the executable.")
         sys.exit(1)
     extra_args = _parse_extra_args(os.environ.get('OPENCODE_ARGS', ''))
+    # Disable register-tests MCP tools only for this impl loop run.
+    opencode_config_override = {}
+    existing_override = os.environ.get("OPENCODE_CONFIG_CONTENT")
+    if existing_override:
+        try:
+            opencode_config_override = json.loads(existing_override)
+        except json.JSONDecodeError:
+            opencode_config_override = {}
+    tools_override = opencode_config_override.get("tools")
+    if not isinstance(tools_override, dict):
+        tools_override = {}
+    tools_override.update(
+        {
+            "register-tests": False,
+            "register-tests_*": False,
+        }
+    )
+    opencode_config_override["tools"] = tools_override
+    opencode_env = os.environ.copy()
+    opencode_env["OPENCODE_CONFIG_CONTENT"] = json.dumps(opencode_config_override)
 
     timeout = int(os.environ.get('OPENCODE_TIMEOUT', '0'))
     timeout = timeout if timeout > 0 else None
@@ -118,6 +139,7 @@ def main(max_iterations=50, tech_stack_file='TECH_STACK.md'):
                 cwd=base_dir,
                 encoding='utf-8',
                 errors='replace',
+                env=opencode_env,
             )
             last_output = [time.monotonic()]
             lock = threading.Lock()
