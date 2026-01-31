@@ -10,3 +10,4 @@
 - Captured the 0010 accessibility spec: every action must be keyboard reachable, focus rings stay visible, controls keep 40px hit targets, and colors cannot be sole state indicators.
 - Built accessibility domain helpers that audit keyboard reachability, persistent focus rings, 40px hit targets, and color-plus indicators so spec 0010 can stay enforceable in tests.
 - Introduced feedback-state helpers that gate empty submissions with subtle helper text, apply optimistic non-blocking saves, and remove tasks with a 5s undo toast per spec 0011.
+- Captured the 0007 interactions spec: Enter submits new tasks, Escape backs out of edits, checkbox clicks toggle completion, focus rings must use the accent cyan, and motion stays within 140-200ms easing while honoring reduced-motion.
