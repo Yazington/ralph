@@ -1,4 +1,8 @@
 import { Task } from './task';
+import { User } from './user';
+import { Category } from './category';
+import { Comment } from './comment';
+import { Notification } from './notification';
 
 export interface Repository<T, ID> {
   create(item: T): Promise<ID>;
@@ -24,8 +28,32 @@ export interface TaskRepository extends Repository<Task, string> {
   searchByTitle(keyword: string): Promise<Task[]>;
 }
 
+export interface UserRepository extends Repository<User, string> {
+  findByEmail(email: string): Promise<User | null>;
+  searchByName(keyword: string): Promise<User[]>;
+}
+
+export interface CategoryRepository extends Repository<Category, string> {
+  findByName(name: string): Promise<Category | null>;
+  searchByName(keyword: string): Promise<Category[]>;
+}
+
+export interface CommentRepository extends Repository<Comment, string> {
+  findByTaskId(taskId: string): Promise<Comment[]>;
+  findByUserId(userId: string): Promise<Comment[]>;
+}
+
+export interface NotificationRepository extends Repository<Notification, string> {
+  findByUserId(userId: string, unreadOnly?: boolean): Promise<Notification[]>;
+  markAsRead(id: string): Promise<void>;
+  markAllAsRead(userId: string): Promise<void>;
+}
+
 // DataStore interface abstracts the underlying storage mechanism (IndexedDB, localStorage, mock, etc.)
 export interface DataStore {
   tasks: TaskRepository;
-  // future: users, categories, etc.
+  users: UserRepository;
+  categories: CategoryRepository;
+  comments: CommentRepository;
+  notifications: NotificationRepository;
 }

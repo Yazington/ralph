@@ -3,3 +3,7 @@ export * from './user';
 export * from './category';
 export * from './task-utils';
 export * from './recurrence';
+export * from './user-utils';
+export * from './category-utils';
+export * from './comment';
+export * from './notification';
