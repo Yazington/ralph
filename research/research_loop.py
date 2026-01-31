@@ -1,43 +1,43 @@
 import os
 import sys
 import subprocess
-import argparse
 import shutil
+from pathlib import Path
 
-def _commit_if_needed(repo_root):
-    try:
-        subprocess.run(
-            ["git", "-C", repo_root, "add", "-A"],
-            check=True,
+def _resolve_path(base_dir: Path, candidate: str) -> Path:
+    path = Path(candidate)
+    return path if path.is_absolute() else base_dir / path
+
+
+def _resolve_opencode(cmd: str) -> str | None:
+    resolved = shutil.which(cmd)
+    if resolved:
+        return resolved
+    if os.name == "nt" and cmd == "opencode":
+        result = subprocess.run(
+            ["where", "opencode"],
             capture_output=True,
             text=True,
-        )
-        diff = subprocess.run(
-            ["git", "-C", repo_root, "diff", "--cached", "--quiet"],
-            capture_output=True,
-            text=True,
-        )
-        if diff.returncode == 0:
-            return
-        subprocess.run(
-            ["git", "-C", repo_root, "commit", "-m", "Research iteration"],
             check=False,
-            capture_output=True,
-            text=True,
         )
-    except Exception as e:
-        print(f"Warning: git commit step failed: {e}")
+        if result.stdout:
+            return result.stdout.splitlines()[0].strip()
+    return None
 
 
-def main(max_iterations=50, tech_stack_file='TECH_STACK.md', opencode_cmd='opencode'):
+def main(max_iterations=50, tech_stack_file='TECH_STACK.md'):
     """
     Ralph-like loop for OpenCode: Research phase.
     Generates requirements, searches (via fetch tool), TDD/tests, SDK.
     Restricted to current folder.
     """
+    base_dir = Path(__file__).resolve().parent
+    repo_root = base_dir.parent
+
     # Load tech stack
     try:
-        with open(tech_stack_file, 'r') as f:
+        tech_stack_path = _resolve_path(base_dir, tech_stack_file)
+        with tech_stack_path.open('r', encoding='utf-8') as f:
             tech_stack = f.read()
     except FileNotFoundError:
         print(f"Error: {tech_stack_file} not found.")
@@ -45,68 +45,60 @@ def main(max_iterations=50, tech_stack_file='TECH_STACK.md', opencode_cmd='openc
     
     # Load fixed prompt
     try:
-        with open('PROMPT_research.md', 'r') as f:
+        prompt_path = base_dir / 'PROMPT_research.md'
+        with prompt_path.open('r', encoding='utf-8') as f:
             base_prompt = f.read().format(tech_stack=tech_stack)
     except FileNotFoundError:
         print("Error: PROMPT_research.md not found.")
         sys.exit(1)
     
-    # Resolve OpenCode executable early for clearer errors.
-    resolved_cmd = shutil.which(opencode_cmd) or shutil.which(f"{opencode_cmd}.exe")
-    if resolved_cmd is None:
-        print(
-            f"Error: '{opencode_cmd}' not found on PATH. "
-            "Install OpenCode or pass --opencode-cmd with the full path."
-        )
+    opencode_cmd = os.environ.get('OPENCODE_CMD', 'opencode')
+    opencode_path = _resolve_opencode(opencode_cmd)
+    if opencode_path is None:
+        print(f"Error: '{opencode_cmd}' not found in PATH.")
+        print("Install OpenCode or set OPENCODE_CMD to the full path of the executable.")
         sys.exit(1)
 
     iteration = 0
-    last_error = ""
     while iteration < max_iterations:
         print(f"Iteration {iteration + 1}: Starting research loop...")
         
         # Run OpenCode non-interactive
         try:
-            prompt = base_prompt
-            if last_error:
-                prompt = (
-                    f"{base_prompt}\n\n<error>\n{last_error}\n</error>\n"
-                    "<instruction>Fix the error above.</instruction>\n"
-                )
             result = subprocess.run(
-                [resolved_cmd, '-p', prompt, '-q'],
+                [opencode_path, '-p', base_prompt, '-q'],
                 capture_output=True,
                 text=True,
-                check=True
+                check=True,
+                cwd=base_dir,
             )
             output = result.stdout
             print(output)  # For monitoring
-            last_error = result.stderr.strip()
             
             # Check for completion tag
             if '<done>COMPLETE</done>' in output:
                 print("Research complete!")
                 break
         except subprocess.CalledProcessError as e:
-            last_error = (e.stderr or e.stdout or "").strip()
-            print(f"Error: {last_error}")
+            print(f"Error: {e.stderr}")
         
         # Commit changes (AI handles via bash tool in prompt)
-        repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-        _commit_if_needed(repo_root)
+        subprocess.run(
+            ['git', '-C', str(repo_root), 'add', '.'],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        subprocess.run(
+            ['git', '-C', str(repo_root), 'commit', '-m', f"Research iteration {iteration + 1}"],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
         
         iteration += 1
     
     print("Research loop ended.")
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="Run research loop.")
-    parser.add_argument("--max-iterations", type=int, default=50)
-    parser.add_argument("--tech-stack-file", default="TECH_STACK.md")
-    parser.add_argument("--opencode-cmd", default="opencode")
-    args = parser.parse_args()
-    main(
-        max_iterations=args.max_iterations,
-        tech_stack_file=args.tech_stack_file,
-        opencode_cmd=args.opencode_cmd,
-    )
+    main()
