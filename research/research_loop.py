@@ -20,7 +20,7 @@ def _commit_if_needed(repo_root):
         if diff.returncode == 0:
             return
         subprocess.run(
-            ["git", "-C", repo_root, "commit", "-m", "Impl iteration"],
+            ["git", "-C", repo_root, "commit", "-m", "Research iteration"],
             check=False,
             capture_output=True,
             text=True,
@@ -31,9 +31,9 @@ def _commit_if_needed(repo_root):
 
 def main(max_iterations=50, tech_stack_file='TECH_STACK.md', opencode_cmd='opencode'):
     """
-    Ralph-like loop for OpenCode: Implementation phase.
-    Generates code to satisfy requirements, searches for issues.
-    Restricted to current folder, uses local copies.
+    Ralph-like loop for OpenCode: Research phase.
+    Generates requirements, searches (via fetch tool), TDD/tests, SDK.
+    Restricted to current folder.
     """
     # Load tech stack
     try:
@@ -45,10 +45,10 @@ def main(max_iterations=50, tech_stack_file='TECH_STACK.md', opencode_cmd='openc
     
     # Load fixed prompt
     try:
-        with open('PROMPT_impl.md', 'r') as f:
+        with open('PROMPT_research.md', 'r') as f:
             base_prompt = f.read().format(tech_stack=tech_stack)
     except FileNotFoundError:
-        print("Error: PROMPT_impl.md not found.")
+        print("Error: PROMPT_research.md not found.")
         sys.exit(1)
     
     # Resolve OpenCode executable early for clearer errors.
@@ -63,7 +63,7 @@ def main(max_iterations=50, tech_stack_file='TECH_STACK.md', opencode_cmd='openc
     iteration = 0
     last_error = ""
     while iteration < max_iterations:
-        print(f"Iteration {iteration + 1}: Starting implementation loop...")
+        print(f"Iteration {iteration + 1}: Starting research loop...")
         
         # Run OpenCode non-interactive
         try:
@@ -85,22 +85,22 @@ def main(max_iterations=50, tech_stack_file='TECH_STACK.md', opencode_cmd='openc
             
             # Check for completion tag
             if '<done>COMPLETE</done>' in output:
-                print("Implementation complete!")
+                print("Research complete!")
                 break
         except subprocess.CalledProcessError as e:
             last_error = (e.stderr or e.stdout or "").strip()
             print(f"Error: {last_error}")
         
-        # Commit changes
+        # Commit changes (AI handles via bash tool in prompt)
         repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
         _commit_if_needed(repo_root)
         
         iteration += 1
     
-    print("Implementation loop ended.")
+    print("Research loop ended.")
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="Run implementation loop.")
+    parser = argparse.ArgumentParser(description="Run research loop.")
     parser.add_argument("--max-iterations", type=int, default=50)
     parser.add_argument("--tech-stack-file", default="TECH_STACK.md")
     parser.add_argument("--opencode-cmd", default="opencode")
