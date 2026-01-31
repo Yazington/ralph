@@ -12,3 +12,4 @@
 - Introduced feedback-state helpers that gate empty submissions with subtle helper text, apply optimistic non-blocking saves, and remove tasks with a 5s undo toast per spec 0011.
 - Captured the 0007 interactions spec: Enter submits new tasks, Escape backs out of edits, checkbox clicks toggle completion, focus rings must use the accent cyan, and motion stays within 140-200ms easing while honoring reduced-motion.
 - Learned the 0006 components spec: composer pairs a text field with an Add button, todo rows bundle checkbox+title+inline edit, icon-only edit/delete buttons flank each item, and the footer shows the live count plus filter pills.
+- Sketched component blueprints so specs can stay enforceable: composer blueprint ties Enter submission to the Add button, todo rows flag inline-editable titles plus completion checkboxes, action clusters expose icon-only edit/delete buttons, and the footer blueprint keeps the live count with all three filter pills.
