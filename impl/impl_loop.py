@@ -8,6 +8,10 @@ import time
 import json
 from pathlib import Path
 
+_MAX_TOKENS = 50_000
+_CHARS_PER_TOKEN = 4  # rough safety estimate
+_MAX_CHARS = _MAX_TOKENS * _CHARS_PER_TOKEN
+
 def _resolve_path(base_dir: Path, candidate: str) -> Path:
     path = Path(candidate)
     return path if path.is_absolute() else base_dir / path
@@ -60,6 +64,26 @@ def _start_stream_thread(stream, prefix: str, complete_event, usage_event, last_
     return thread
 
 
+def _enforce_prompt_limits(base_prompt: str) -> str:
+    """
+    Append enforcement instructions and truncate to stay under ~50K tokens.
+    """
+    enforcement = (
+        "\n\n<instruction>\n"
+        "You must document progress somewhere in the workspace every iteration.\n"
+        "Use an existing file or create a new one if needed.\n"
+        "Keep updates concise and focused on what changed and why.\n"
+        "</instruction>\n"
+    )
+    prompt = f"{base_prompt}{enforcement}"
+    if len(prompt) > _MAX_CHARS:
+        print(
+            f"Warning: prompt size {len(prompt)} chars exceeds limit {_MAX_CHARS}; truncating."
+        )
+        prompt = prompt[:_MAX_CHARS]
+    return prompt
+
+
 def main(max_iterations=50, tech_stack_file='TECH_STACK.md'):
     """
     Ralph-like loop for OpenCode: Implementation phase.
@@ -86,6 +110,7 @@ def main(max_iterations=50, tech_stack_file='TECH_STACK.md'):
     except FileNotFoundError:
         print("Error: PROMPT_impl.md not found.")
         sys.exit(1)
+    base_prompt = _enforce_prompt_limits(base_prompt)
     
     opencode_cmd = os.environ.get('OPENCODE_CMD', 'opencode')
     opencode_path = _resolve_opencode(opencode_cmd)

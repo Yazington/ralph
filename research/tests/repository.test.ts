@@ -137,4 +137,12 @@ describe('InMemoryTaskRepository', () => {
     expect(results).toHaveLength(1);
     expect(results[0].id).toBe('1');
   });
+
+  it('should throw when updating non-existent task', async () => {
+    await expect(repo.update('nonexistent', { title: 'New' })).rejects.toThrow('Task with id nonexistent not found');
+  });
+
+  it('should not throw when deleting non-existent task', async () => {
+    await expect(repo.delete('nonexistent')).resolves.not.toThrow();
+  });
 });
