@@ -8,6 +8,7 @@ import {
   planCheckboxToggle,
   planComposerKeyAction,
 } from '../domain_types/interactions';
+import { getColorPalette } from '../domain_types/color-palette';
 
 describe('Composer key handling (spec 0007)', () => {
   test('planComposerKeyAction submits on Enter when the composer has content', () => {
@@ -53,6 +54,11 @@ describe('Checkbox toggles completion (spec 0007)', () => {
 });
 
 describe('Focus ring styling (spec 0007)', () => {
+  test('ACCENT_CYAN_HEX matches the shared palette accent color', () => {
+    const palette = getColorPalette();
+    expect(ACCENT_CYAN_HEX).toBe(palette.accent.hex);
+  });
+
   test('deriveFocusRing keeps the accent cyan color whenever focus is visible', () => {
     const focused = deriveFocusRing(true);
     expect(focused.color).toBe(ACCENT_CYAN_HEX);

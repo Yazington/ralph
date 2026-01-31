@@ -1,3 +1,4 @@
+import { getColorPalette } from './color-palette';
 import { Task, TaskId, Timestamp } from './task-domain';
 
 export type ComposerKey = 'Enter' | 'Escape';
@@ -73,7 +74,9 @@ export interface FocusRingStyle {
   offsetPx: number;
 }
 
-export const ACCENT_CYAN_HEX = '#0FA9E6';
+const ACCENT_CYAN = getColorPalette().accent;
+
+export const ACCENT_CYAN_HEX = ACCENT_CYAN.hex;
 
 export function deriveFocusRing(isFocused: boolean): FocusRingStyle {
   return {
