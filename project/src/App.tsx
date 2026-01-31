@@ -1,7 +1,8 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { getColorPalette } from '@domain/color-palette';
 import { createLayoutPlan } from '@domain/layout';
 import { formatFontStack, planFontLoading } from '@domain/typography';
+import { loadFontsFromPlan } from './typography/load-fonts';
 
 const palette = getColorPalette();
 const surfaceTokens = Object.values(palette.surfaces);
@@ -21,6 +22,10 @@ export default function App() {
   );
 
   const layoutPlan = useMemo(() => createLayoutPlan(viewportWidth), [viewportWidth]);
+
+  useEffect(() => {
+    void loadFontsFromPlan(fontPlans);
+  }, []);
 
   return (
     <main className="min-h-screen bg-base text-textPrimary flex items-center justify-center px-4 py-16">
