@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+  --surface-base: #090b0d;
+  --surface-panel: #0b1013;
+  --surface-panel-alt: #101d1e;
+  --surface-panel-teal: #132e2c;
+  --text-primary: #b5d7cd;
+  --text-muted: #6a8f96;
+  --text-muted-alt: #588391;
+  --accent-cyan: #7299a2;
+  --divider-color: #2b2c2d66;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: 'IBM Plex Mono', 'JetBrains Mono', monospace;
+  background-color: var(--surface-base);
+  color: var(--text-primary);
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
