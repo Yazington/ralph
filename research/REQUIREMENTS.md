@@ -56,3 +56,24 @@
 - Security: no sensitive data stored unencrypted
 - Privacy: user data stays on device unless sync enabled
 - Cross-browser compatibility (Chrome, Firefox, Safari, Edge)
+
+## Error Handling
+- All user inputs must be validated with clear error messages
+- Network failures should be gracefully handled with retry logic
+- Data corruption detection and recovery mechanisms
+- Error logging for debugging (client-side only, no PII)
+- Fallback UI for offline mode
+
+## Performance Metrics
+- Time to interactive (TTI) < 2 seconds
+- First contentful paint (FCP) < 1 second
+- Input latency < 100ms
+- Memory usage < 100MB for typical task lists
+- Bundle size < 200KB gzipped for core application
+- IndexedDB operations complete within 50ms for up to 10,000 tasks
+
+## Data Integrity
+- Use Zod schema validation for all data structures
+- Immutable updates for state management
+- Regular backup of user data (local)
+- Conflict resolution for multi-device sync

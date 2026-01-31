@@ -1,5 +1,21 @@
 # Research Progress
 
+## Date: 2026-01-31
+
+### Discoveries about recurrence rules:
+- Researched rrule.js library for iCalendar RFC recurrence rule implementation.
+- Found examples for daily, weekly, monthly, yearly frequencies with interval, end date, byWeekDay.
+- Need to integrate rrule.js with date-fns for date manipulation.
+- Added rrule.js to NEEDS.md as a dependency for recurrence.
+
+### Progress:
+- Created recurrence.ts with validation and basic next occurrence calculation.
+- Updated task-utils.ts to validate recurrence rules and reminders.
+- Added exports to domain_types/index.ts.
+- Wrote unit tests for recurrence validation and next occurrence.
+- Updated task tests with recurrence and reminder validation.
+- Extended REQUIREMENTS.md with error handling, performance metrics, and data integrity sections.
+
 ## Date: 2025-01-31
 
 ### Discoveries from TODO app research:

@@ -205,3 +205,40 @@ describe('Task completion percentage', () => {
     expect(getTaskCompletionPercentage(task)).toBe(67); // 2/3 ≈ 66.666 -> rounded to 67
   });
 });
+
+describe('Task validation with recurrence and reminders', () => {
+  it('should validate recurrence rule', () => {
+    const task: Partial<Task> = {
+      id: '1',
+      title: 'Test',
+      recurrence: { frequency: 'invalid' as any, interval: 1 },
+    };
+    const errors = validateTask(task);
+    expect(errors).toContain('Frequency must be daily, weekly, monthly, yearly, or custom');
+  });
+
+  it('should validate reminder', () => {
+    const task: Partial<Task> = {
+      id: '1',
+      title: 'Test',
+      reminders: [
+        { id: '', triggerAt: new Date(), notified: false },
+      ],
+    };
+    const errors = validateTask(task);
+    expect(errors).toContain('Reminder 0 must have an id');
+  });
+
+  it('should accept valid reminder', () => {
+    const task: Partial<Task> = {
+      id: '1',
+      title: 'Test',
+      reminders: [
+        { id: 'rem1', triggerAt: new Date('2026-01-31T12:00:00'), notified: false },
+      ],
+    };
+    const errors = validateTask(task);
+    expect(errors).not.toContain('Reminder 0 must have an id');
+    expect(errors).not.toContain('Reminder 0 must have a valid trigger date');
+  });
+});

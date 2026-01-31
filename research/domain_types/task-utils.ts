@@ -1,4 +1,5 @@
-import { Task, Priority } from './task';
+import { Task, Priority, RecurrenceRule, Reminder } from './task';
+import { validateRecurrenceRule } from './recurrence';
 
 export function validateTask(task: Partial<Task>): string[] {
   const errors: string[] = [];
@@ -16,6 +17,20 @@ export function validateTask(task: Partial<Task>): string[] {
       const subtask = task.subtasks[i];
       if (!subtask.id) errors.push(`Subtask ${i} must have an id`);
       if (!subtask.title || subtask.title.trim().length === 0) errors.push(`Subtask ${i} must have a title`);
+    }
+  }
+  // Validate recurrence rule
+  if (task.recurrence) {
+    errors.push(...validateRecurrenceRule(task.recurrence));
+  }
+  // Validate reminders
+  if (task.reminders) {
+    for (let i = 0; i < task.reminders.length; i++) {
+      const reminder = task.reminders[i];
+      if (!reminder.id) errors.push(`Reminder ${i} must have an id`);
+      if (!reminder.triggerAt || !(reminder.triggerAt instanceof Date) && isNaN(Date.parse(reminder.triggerAt as string))) {
+        errors.push(`Reminder ${i} must have a valid trigger date`);
+      }
     }
   }
   return errors;
