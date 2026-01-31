@@ -39,3 +39,5 @@
 - Hit the token limit when trying to open `project/tests/components.test.ts`, so keep grabbing targeted slices of that file instead of the entire suite (session ses_3e9a1e773ffea2bOue6o6oKIB4).
 - Logged the drag-and-drop spec: todos must support drag reordering without adding new visual themes—reuse the calm palette defined elsewhere so the app stays consistent.
 - Learned the interaction-and-styling brief adds that completed todos should feel stacked beneath the viewport while active items stay up top, so drag/drop ordering needs to reinforce that vertical separation.
+- Noticed the viewport preset buttons still lean on color shifts and sub-40px padding to signal selection, so spec 0010 accessibility work needs visual/state reinforcements plus larger hit targets in the preview UI.
+- Hit the token limit when listing `project/src`, so access specific files directly instead of dumping the entire directory (session ses_3e998b53affehLbDnlF7u2SuBt).
