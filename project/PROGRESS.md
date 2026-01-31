@@ -33,3 +33,4 @@
 - Learned during `pnpm typecheck` that `addTask` can only return mutable arrays when it clones the readonly input, so we now slice before returning when the ID already exists.
 - Noted that Vitest's jsdom environment is required for the domain helper suites, so `jsdom` lives in devDependencies to keep `pnpm test` aligned with the build-dev spec.
 - Captured that the new Vite + React + Tailwind scaffold consumes domain helpers via the `@domain` alias so `pnpm dev`, `pnpm lint`, and `pnpm typecheck` share the same source of truth.
+- Hit the token read limit when opening `project/src/App.tsx`, so target smaller sections instead of the full file next time (session ses_3e9a7ca8affe3uV2BEMGMrzywM).
