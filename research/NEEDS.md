@@ -8,6 +8,7 @@
 
 ## Recurrence
 - rrule.js: library for working with recurrence rules for calendar dates based on iCalendar RFC.
+- @types/rrule: TypeScript definitions for rrule.js.
 
 ## State Management
 - Zustand: simple state management for React (optional, could use React Context).

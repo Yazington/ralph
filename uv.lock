@@ -2416,10 +2416,14 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "open-interpreter" },
+    { name = "tiktoken" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "open-interpreter", specifier = ">=0.4.3" }]
+requires-dist = [
+    { name = "open-interpreter", specifier = ">=0.4.3" },
+    { name = "tiktoken", specifier = ">=0.7.0,<0.8.0" },
+]
 
 [[package]]
 name = "readchar"
