@@ -7,3 +7,4 @@
 - Logged the feedback states spec (empty-title input errors, optimistic saving, undoable deletions) to guide new domain helpers.
 - Absorbed the 0008 UX flow spec so helpers can enforce first-run focus/hints, add-edit keyboard behaviors, and dim/sort completed tasks beneath active ones.
 - Cataloged the available specs (0001 typography through 0011 feedback states) so the next tasks can target uncovered requirements like accessibility.
+- Captured the 0010 accessibility spec: every action must be keyboard reachable, focus rings stay visible, controls keep 40px hit targets, and colors cannot be sole state indicators.
