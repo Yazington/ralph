@@ -20,6 +20,7 @@ export interface EmptyState {
   kind: EmptyStateKind;
   message: string;
   actionLabel?: string;
+  actionTargetFilter?: TaskFilter;
   sampleTask?: Task;
 }
 
@@ -130,6 +131,7 @@ export function deriveEmptyState(tasks: readonly Task[], filter: TaskFilter): Em
       kind: 'filterEmpty',
       message: 'No tasks here. Switch back to All to see everything.',
       actionLabel: 'Show all tasks',
+      actionTargetFilter: 'all',
     };
   }
 

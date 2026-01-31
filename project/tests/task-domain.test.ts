@@ -101,20 +101,25 @@ describe('deriveEmptyState (spec 0009)', () => {
     const emptyState = deriveEmptyState([], 'all');
     expect(emptyState).not.toBeNull();
     expect(emptyState?.kind).toBe('noTasks');
+    expect(emptyState?.message).toBe('Calm list. Add a gentle task to get started.');
     expect(emptyState?.sampleTask).toBe(EMPTY_STATE_SAMPLE_TASK);
     expect(emptyState?.actionLabel).toBe('Add your first task');
+    expect(emptyState?.actionTargetFilter).toBeUndefined();
   });
 
   test('returns filterEmpty when the current filter has no matches', () => {
     const emptyState = deriveEmptyState([completedTask], 'active');
     expect(emptyState?.kind).toBe('filterEmpty');
     expect(emptyState?.actionLabel).toBe('Show all tasks');
+    expect(emptyState?.actionTargetFilter).toBe('all');
+    expect(emptyState?.message).toContain('No tasks here');
   });
 
   test('returns allComplete when all tasks are done under All filter', () => {
     const emptyState = deriveEmptyState([completedTask], 'all');
     expect(emptyState?.kind).toBe('allComplete');
-    expect(emptyState?.message).toContain('All clear');
+    expect(emptyState?.message).toBe('All clear. Nothing to do right now.');
+    expect(emptyState?.actionTargetFilter).toBeUndefined();
   });
 
   test('returns null when the filter still yields tasks', () => {
