@@ -22,3 +22,4 @@
 - Added typography domain helpers plus Vitest coverage that emit a quoted font stack, guard supported weights, and plan swap-loaded font requests so the spec remains enforceable during implementation.
 - Captured the 0002 color palette spec: base #090B0D surface, layered panels (#0B1013, #101D1E, #132E2C), translucent #2B2C2D dividers, mint #B5D7CD primary copy, muted #6A8F96 text, muted-alt #588391, and accent cyan #7299A2 for focus/links.
 - Hit the command token cap when listing `project/domain_types`, so future passes need narrower glob patterns or direct file reads instead of dumping the whole directory.
+- Introduced color palette domain helpers that freeze the base/deep/alt/teal surfaces, mint and muted text tones, the translucent #2B2C2D divider, and the shared accent cyan usage so spec 0002 remains testable.
