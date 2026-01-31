@@ -9,3 +9,4 @@
 - Cataloged the available specs (0001 typography through 0011 feedback states) so the next tasks can target uncovered requirements like accessibility.
 - Captured the 0010 accessibility spec: every action must be keyboard reachable, focus rings stay visible, controls keep 40px hit targets, and colors cannot be sole state indicators.
 - Built accessibility domain helpers that audit keyboard reachability, persistent focus rings, 40px hit targets, and color-plus indicators so spec 0010 can stay enforceable in tests.
+- Introduced feedback-state helpers that gate empty submissions with subtle helper text, apply optimistic non-blocking saves, and remove tasks with a 5s undo toast per spec 0011.
