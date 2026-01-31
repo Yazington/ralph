@@ -17,3 +17,4 @@
 - Hit the token read limit when trying to open `project/specs/0005-spacing-shape.md`, so future passes need targeted excerpts instead of whole-file reads.
 - Captured the 0005 spacing+shape spec detailing the 4-32px spacing scale, 16px panels, 10px control radii, and semi-transparent 1px borders.
 - Logged the 0004 layout spec calling for a centered, padded panel over a full-viewport background with header/input/list/footer sections and mobile-friendly 16px gutters.
+- Implemented layout domain helpers that return viewport-filling surface data, a centered generous panel that flips to full-width with 16px gutters at ≤640px, and an ordered header/input/list/footer stack plus responsive metadata so spec 0004 can stay testable.
