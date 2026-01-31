@@ -20,4 +20,5 @@
 - Implemented layout domain helpers that return viewport-filling surface data, a centered generous panel that flips to full-width with 16px gutters at ≤640px, and an ordered header/input/list/footer stack plus responsive metadata so spec 0004 can stay testable.
 - Logged the typography spec (0001): IBM Plex Mono is the primary face, JetBrains Mono acts as fallback, and only weights 400/500/600 should load to keep the UI calm.
 - Added typography domain helpers plus Vitest coverage that emit a quoted font stack, guard supported weights, and plan swap-loaded font requests so the spec remains enforceable during implementation.
+- Captured the 0002 color palette spec: base #090B0D surface, layered panels (#0B1013, #101D1E, #132E2C), translucent #2B2C2D dividers, mint #B5D7CD primary copy, muted #6A8F96 text, muted-alt #588391, and accent cyan #7299A2 for focus/links.
 - Hit the command token cap when listing `project/domain_types`, so future passes need narrower glob patterns or direct file reads instead of dumping the whole directory.
