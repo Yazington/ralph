@@ -1,0 +1,29 @@
+Fetching best practices for TODO apps from public APIs...
+Fetching StackExchange questions...
+  Found 0 questions
+Fetching Reddit posts...
+Error fetching from Reddit: 403 Client Error: Forbidden for url: https://api.pushshift.io/reddit/search/submission?q=todo+app+best+practices&size=5&sort=desc&sort_type=score
+  Found 0 posts
+Fetching GitHub repositories...
+  Found 3 repositories
+Saved results to api_results.json
+
+--- Summary ---
+stackexchange: 0 items
+reddit: 0 items
+github: 3 items
+
+Key insights from StackExchange:
+
+Key insights from Reddit:
+
+Top GitHub repositories:
+Traceback (most recent call last):
+  File "C:\Users\yazan\Workspace\ralph\research\fetch_best_practices.py", line 140, in <module>
+    main()
+  File "C:\Users\yazan\Workspace\ralph\research\fetch_best_practices.py", line 135, in main
+    print(f"  - {name} (\u2605 {stars}): {description}")
+  File "C:\Users\yazan\AppData\Local\Programs\Python\Python311\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u2605' in position 71: character maps to <undefined>

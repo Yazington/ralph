@@ -3,6 +3,8 @@ import sys
 import subprocess
 import shutil
 import shlex
+import threading
+import time
 from pathlib import Path
 
 def _resolve_path(base_dir: Path, candidate: str) -> Path:
@@ -30,6 +32,31 @@ def _parse_extra_args(value: str) -> list[str]:
     if not value:
         return []
     return shlex.split(value, posix=(os.name != "nt"))
+
+
+def _start_stream_thread(stream, prefix: str, complete_event, usage_event, last_output, lock):
+    def _run():
+        for line in stream:
+            if not line:
+                break
+            if '<done>COMPLETE</done>' in line:
+                complete_event.set()
+            if 'opencode run [message..]' in line:
+                usage_event.set()
+            with lock:
+                last_output[0] = time.monotonic()
+            if prefix:
+                print(f"{prefix}{line}", end="")
+            else:
+                print(line, end="")
+        try:
+            stream.close()
+        except Exception:
+            pass
+
+    thread = threading.Thread(target=_run, daemon=True)
+    thread.start()
+    return thread
 
 
 def main(max_iterations=50, tech_stack_file='TECH_STACK.md'):
@@ -69,38 +96,76 @@ def main(max_iterations=50, tech_stack_file='TECH_STACK.md'):
 
     timeout = int(os.environ.get('OPENCODE_TIMEOUT', '0'))
     timeout = timeout if timeout > 0 else None
+    heartbeat = int(os.environ.get('OPENCODE_HEARTBEAT', '10'))
+    heartbeat = heartbeat if heartbeat > 0 else None
+    show_cmd = os.environ.get('OPENCODE_SHOW_CMD', '1') not in ('0', 'false', 'False')
 
     iteration = 0
     while iteration < max_iterations:
         print(f"Iteration {iteration + 1}: Starting research loop...")
+        if show_cmd:
+            print(f"OpenCode: {opencode_path}")
+            print(f"Working dir: {base_dir}")
+            print(f"Prompt size: {len(base_prompt)} chars")
         
         # Run OpenCode non-interactive
         try:
-            result = subprocess.run(
-                [opencode_path, 'run', '--prompt', base_prompt, *extra_args],
-                capture_output=True,
+            process = subprocess.Popen(
+                [opencode_path, 'run', base_prompt, *extra_args],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
                 text=True,
-                check=False,
                 cwd=base_dir,
-                timeout=timeout,
                 encoding='utf-8',
                 errors='replace',
             )
-            stdout = result.stdout or ""
-            stderr = result.stderr or ""
-            if stdout:
-                print(stdout)  # For monitoring
-            if stderr:
-                print(stderr)
+            last_output = [time.monotonic()]
+            lock = threading.Lock()
+            complete_event = threading.Event()
+            usage_event = threading.Event()
+            threads = []
+            if process.stdout is not None:
+                threads.append(_start_stream_thread(process.stdout, "", complete_event, usage_event, last_output, lock))
+            if process.stderr is not None:
+                threads.append(_start_stream_thread(process.stderr, "", complete_event, usage_event, last_output, lock))
 
-            # Check for completion tag
-            if '<done>COMPLETE</done>' in stdout:
+            timed_out = False
+            start_time = time.monotonic()
+            while process.poll() is None:
+                if timeout and (time.monotonic() - start_time) > timeout:
+                    timed_out = True
+                    process.terminate()
+                    break
+                if heartbeat:
+                    with lock:
+                        elapsed = time.monotonic() - last_output[0]
+                    if elapsed >= heartbeat:
+                        print(f"... opencode still running ({int(elapsed)}s since last output)")
+                        with lock:
+                            last_output[0] = time.monotonic()
+                time.sleep(0.5)
+
+            if timed_out:
+                try:
+                    process.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    process.kill()
+                print("Error: opencode timed out.")
+            else:
+                process.wait()
+
+            for thread in threads:
+                thread.join(timeout=1)
+
+            if complete_event.is_set():
                 print("Research complete!")
                 break
-            if result.returncode != 0:
-                print(f"Error: opencode exited with code {result.returncode}")
-        except subprocess.TimeoutExpired:
-            print("Error: opencode timed out.")
+
+            if process.returncode != 0:
+                print(f"Error: opencode exited with code {process.returncode}")
+                if usage_event.is_set():
+                    print("Error: opencode run did not receive a message. Check the command arguments.")
+                    break
         except KeyboardInterrupt:
             print("Research loop interrupted by user.")
             break
