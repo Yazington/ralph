@@ -48,6 +48,9 @@ iteration=0
 
 echo "Starting loop..."
 
+# Restrict this loop's opencode calls from touching ralph.sh or .opencode.
+OPENCODE_PERMISSION='{"read":{"*":"allow","ralph.sh":"deny",".opencode/**":"deny"},"edit":{"*":"allow","ralph.sh":"deny",".opencode/**":"deny"},"list":{"*":"allow",".opencode":"deny",".opencode/**":"deny"},"glob":{"*":"allow","*ralph.sh*":"deny","*/.opencode/*":"deny","*.opencode*":"deny"},"grep":{"*":"allow","*ralph.sh*":"deny","*.opencode*":"deny"}}'
+
 # ensure log dir exists and tee both stdout and stderr to console + log
 mkdir -p ./.ralph
 # send stdout to tee (append), and send stderr to tee as well
@@ -78,14 +81,14 @@ while true; do
     
     # Stage 1: Generate plan with gpt-5.2-codex
     echo "Generating plan..."
-    plan=$(opencode run --agent plan -m openai/gpt-5.2-codex --print-logs --log-level DEBUG "$prompt")
+    plan=$(OPENCODE_PERMISSION="$OPENCODE_PERMISSION" opencode run --agent plan -m openai/gpt-5.2-codex --print-logs --log-level DEBUG "$prompt")
     echo "Plan:"
     echo "$plan"
     echo ""
     
     # Stage 2: Execute plan with gpt-5.1-codex-mini
     echo "Executing plan..."
-    result=$(opencode run --agent build -m openai/gpt-5.1-codex-mini --print-logs --log-level DEBUG "$plan")
+    result=$(OPENCODE_PERMISSION="$OPENCODE_PERMISSION" opencode run --agent build -m openai/gpt-5.1-codex-mini --print-logs --log-level DEBUG "$plan")
     echo "Result:"
     echo "$result"
     echo ""
