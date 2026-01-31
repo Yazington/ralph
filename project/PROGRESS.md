@@ -15,3 +15,4 @@
 - Sketched component blueprints so specs can stay enforceable: composer blueprint ties Enter submission to the Add button, todo rows flag inline-editable titles plus completion checkboxes, action clusters expose icon-only edit/delete buttons, and the footer blueprint keeps the live count with all three filter pills.
 - Confirmed the workspace currently lacks a package.json, so pnpm/vitest can't execute until a manifest exists; leaving the test suite pending this setup.
 - Hit the token read limit when trying to open `project/specs/0005-spacing-shape.md`, so future passes need targeted excerpts instead of whole-file reads.
+- Captured the 0005 spacing+shape spec detailing the 4-32px spacing scale, 16px panels, 10px control radii, and semi-transparent 1px borders.
