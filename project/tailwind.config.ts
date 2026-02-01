@@ -18,6 +18,18 @@ const config: Config = {
       fontFamily: {
         mono: ['IBM Plex Mono', 'JetBrains Mono', 'monospace'],
       },
+      borderRadius: {
+        panel: '16px',
+        control: '10px',
+      },
+      spacing: {
+        4: '4px',
+        8: '8px',
+        12: '12px',
+        16: '16px',
+        24: '24px',
+        32: '32px',
+      },
       boxShadow: {
         panel: '0 45px 70px rgba(0, 0, 0, 0.45)',
       },

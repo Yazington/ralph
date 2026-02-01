@@ -84,7 +84,7 @@ function Composer({ onAddTask, attemptedEmptySubmit, onResetAttempt }: ComposerP
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
             placeholder="Add a new task..."
-            className="w-full bg-[#0B1013] text-[#B5D7CD] placeholder-[#6A8F96] rounded-lg px-4 py-3 outline-none transition-all duration-200"
+            className="w-full bg-[#0B1013] text-[#B5D7CD] placeholder-[#6A8F96] rounded-control px-4 py-3 outline-none transition-all duration-200"
             style={{
               border: inputFeedback.kind === 'inputError'
                 ? '1px solid #7299A2'
@@ -106,7 +106,7 @@ function Composer({ onAddTask, attemptedEmptySubmit, onResetAttempt }: ComposerP
           type="button"
           onClick={handleSubmit}
           disabled={!inputFeedback.canSubmit}
-          className="px-6 py-3 bg-[#132E2C] text-[#B5D7CD] rounded-lg font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#132E2C80] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7299A2]"
+          className="px-6 py-3 bg-[#132E2C] text-[#B5D7CD] rounded-control font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#132E2C80] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7299A2]"
         >
           Add
         </button>
@@ -212,7 +212,7 @@ function TodoItem({
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
             autoFocus
-            className="w-full bg-[#0B1013] text-[#B5D7CD] rounded-lg px-4 py-2 outline-none"
+            className="w-full bg-[#0B1013] text-[#B5D7CD] rounded-control px-4 py-2 outline-none"
             style={{
               border: focusRing.visible ? `2px solid ${focusRing.color}` : '1px solid #2B2C2D',
             }}
@@ -232,7 +232,7 @@ function TodoItem({
           setIsEditing(true);
           setEditValue(task.title);
         }}
-        className="p-2 text-[#6A8F96] hover:text-[#B5D7CD] transition-colors rounded-lg hover:bg-[#0B1013] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7299A2]"
+        className="p-2 text-[#6A8F96] hover:text-[#B5D7CD] transition-colors rounded-control hover:bg-[#0B1013] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7299A2]"
         aria-label="Edit task"
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -244,7 +244,7 @@ function TodoItem({
       <button
         type="button"
         onClick={() => onDeleteTask(task.id)}
-        className="p-2 text-[#6A8F96] hover:text-[#B5D7CD] transition-colors rounded-lg hover:bg-[#0B1013] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7299A2]"
+        className="p-2 text-[#6A8F96] hover:text-[#B5D7CD] transition-colors rounded-control hover:bg-[#0B1013] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7299A2]"
         aria-label="Delete task"
       >
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -278,7 +278,7 @@ function Footer({ filter, activeCount, onFilterChange }: FooterProps) {
             key={f.key}
             type="button"
             onClick={() => onFilterChange(f.key)}
-            className={`px-3 py-1 rounded-lg transition-all duration-200 ${
+            className={`px-3 py-1 rounded-control transition-all duration-200 ${
               filter === f.key
                 ? 'bg-[#132E2C] text-[#B5D7CD]'
                 : 'text-[#6A8F96] hover:text-[#B5D7CD] hover:bg-[#0B1013]'
@@ -308,7 +308,7 @@ function Toast({ message, onUndo, onDismiss }: ToastProps) {
   }, [onDismiss]);
 
   return (
-    <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-[#101D1E] border border-[#2B2C2D] rounded-lg px-4 py-3 flex items-center gap-4 shadow-xl animate-in slide-in-from-bottom-4 duration-300">
+    <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-[#101D1E] border border-[#2B2C2D] rounded-control px-4 py-3 flex items-center gap-4 shadow-xl animate-in slide-in-from-bottom-4 duration-300">
       <span className="text-sm text-[#B5D7CD]">{message}</span>
       <button
         type="button"
@@ -428,7 +428,7 @@ export default function App() {
 
   return (
     <main className="min-h-screen bg-[#090B0D] flex items-center justify-center p-4">
-      <div className="w-full max-w-2xl rounded-3xl border border-[#2B2C2D] bg-[#0B1013] shadow-xl overflow-hidden">
+      <div className="w-full max-w-2xl rounded-panel border border-[#2B2C2D] bg-[#0B1013] shadow-xl overflow-hidden">
         <header className="p-6 border-b border-[#2B2C2D66]">
           <h1 className="text-3xl font-semibold text-[#B5D7CD]">Calm Tasks</h1>
           <p className="text-[#6A8F96] mt-2">A tranquil place to organize your day</p>
@@ -444,7 +444,7 @@ export default function App() {
           <div className="p-8 text-center">
             <p className="text-[#6A8F96] text-lg mb-4">{emptyState.message}</p>
             {emptyState.sampleTask && (
-              <div className="bg-[#0B1013] border border-[#2B2C2D66] rounded-lg p-4 inline-block">
+              <div className="bg-[#0B1013] border border-[#2B2C2D66] rounded-control p-4 inline-block">
                 <p className="text-[#B5D7CD]">{emptyState.sampleTask.title}</p>
               </div>
             )}

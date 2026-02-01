@@ -68,6 +68,42 @@ info() { printf "%b\n" "${C_GREEN}$*${C_RESET}"; }
 warn() { printf "%b\n" "${C_YELLOW}$*${C_RESET}"; }
 muted() { printf "%b\n" "${C_DIM}$*${C_RESET}"; }
 
+ansi_to_html() {
+    local text="$1"
+    text="${text//\&/\&amp;}"
+    text="${text//</\&lt;}"
+    text="${text//>/\&gt;}"
+    text="${text//\"/\&quot;}"
+    text="${text//\\/\\\\}"
+    text="${text//\'/\\\'}"
+    while [[ "$text" =~ $'\x1b'\[([0-9;]+)m(.*)$'\x1b'\[0m(.*) ]]; do
+        local codes="${BASH_REMATCH[1]}"
+        local content="${BASH_REMATCH[2]}"
+        local rest="${BASH_REMATCH[3]}"
+        local classes=""
+        IFS=';' read -ra CODE_ARRAY <<< "$codes"
+        for code in "${CODE_ARRAY[@]}"; do
+            case "$code" in
+                0) classes="" ;;
+                1) classes="${classes} bold" ;;
+                2) classes="${classes} dim" ;;
+                31) classes="${classes} red" ;;
+                32) classes="${classes} green" ;;
+                33) classes="${classes} yellow" ;;
+                34) classes="${classes} blue" ;;
+                36) classes="${classes} cyan" ;;
+                35|37) classes="${classes} magenta" ;;
+            esac
+        done
+        if [[ -n "$classes" ]]; then
+            text="<span class=\"$classes\">$content</span>$rest"
+        else
+            text="$content$rest"
+        fi
+    done
+    [[ -n "$text" ]] && printf '%s\n' "$text" | sed 's/$/<br>/'
+}
+
 info "Starting loop..."
 
 # Restrict this loop's opencode calls from touching ralph.sh or .opencode.
@@ -75,6 +111,7 @@ OPENCODE_PERMISSION='{"read":{"*":"allow","ralph.sh":"deny",".opencode/**":"deny
 
 LOG_DIR="./.ralph"
 LOG_FILE="$LOG_DIR/run.txt"
+HTML_LOG_FILE="$LOG_DIR/run.html"
 STATUS_FILE="$LOG_DIR/status.md"
 PROMPT_FILE="$LOG_DIR/generic_prompt.md"
 OPENCODE_LOG_LEVEL="${OPENCODE_LOG_LEVEL:-WARN}"
@@ -82,6 +119,7 @@ OPENCODE_LOG_LEVEL="${OPENCODE_LOG_LEVEL:-WARN}"
 # ensure log dir exists; keep opencode stderr in a log file
 mkdir -p "$LOG_DIR"
 touch "$LOG_FILE"
+echo '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Ralph Logs</title><style>body{font-family:monospace;background:#1e1e1e;color:#d4d4d4;padding:20px}pre{white-space:pre-wrap;word-wrap:break-word}.red{color:#f87171}.green{color:#4ade80}.yellow{color:#facc15}.blue{color:#60a5fa}.cyan{color:#22d3ee}.magenta{color:#e879f9}.dim{opacity:0.6}.bold{font-weight:bold}.reset{}</style></head><body><pre id="log"></pre><script>' > "$HTML_LOG_FILE"
 
 while true; do
     if [ $iteration -ge $MAX_ITERATIONS ]; then
@@ -116,7 +154,14 @@ while true; do
     
     info "Executing build..."
     OPENCODE_PERMISSION="$OPENCODE_PERMISSION" \
-    opencode run --print-logs --agent build -m zai-coding-plan/glm-4.7 --log-level "$OPENCODE_LOG_LEVEL" "$prompt" 2>&1 | tee -a "$LOG_FILE"
+    opencode run --print-logs --agent build -m zai-coding-plan/glm-4.7 --log-level "$OPENCODE_LOG_LEVEL" "$prompt" 2>&1 | \
+    (
+        while IFS= read -r line; do
+            echo "$line"
+            echo "$line" | sed 's/\x1b\[[0-9;]*m//g' >> "$LOG_FILE"
+            ansi_to_html "$line" >> "$HTML_LOG_FILE"
+        done
+    )
     echo
 
     iteration=$((iteration + 1))
