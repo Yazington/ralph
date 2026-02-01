@@ -87,5 +87,27 @@ Starting: Initialize Vite + React + TypeScript project
 
 ---
 
-### Next Task
-Starting: Configure pnpm
+### Task Completion (2026-01-31 20:56)
+✓ Task: Configure pnpm
+- Researched pnpm configuration best practices using pnpm documentation
+- Created .npmrc file with project-specific settings:
+  * save-prefix='' to pin exact versions for reproducibility
+  * strict-peer-dependencies=false to avoid blocking on minor conflicts
+  * prefer-frozen-lockfile=true for CI/CD consistency
+- Updated tsconfig.app.json to include 'node' types for test files using Node.js modules
+- Created unbiased unit tests in src/pnpm-config.test.ts:
+  * Tests verify .npmrc file exists and contains expected configurations
+  * Tests verify package.json has all required scripts (dev, build, test, test:run, lint)
+  * Tests verify pnpm-lock.yaml file exists
+  * Tests verify pnpm commands work correctly (version check, list packages)
+- All 12 tests pass (total 18 tests across 3 test files)
+- Build succeeds with no errors
+- Lint passes with no issues
+- Committed changes: 00ddee99de44831c7103fff3a6b2b1359ccd97ae
+
+### Key Learnings
+- pnpm v10.17.1 is installed and working correctly
+- pnpm configuration uses .npmrc file with key=value pairs
+- TypeScript test files need both DOM and Node.js types
+- tsconfig.app.json needs "types": ["vite/client", "node"] to access both browser and Node.js APIs
+- ESM requires using import.meta.url and fileURLToPath instead of __dirname
