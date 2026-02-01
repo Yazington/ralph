@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
-import { persist } from 'zustand/middleware/persist'
+import { persist } from 'zustand/middleware'
+import { nanoid } from 'nanoid'
 
 import {
   collectTaskSubtreeIds,
@@ -18,8 +19,10 @@ export interface TaskStoreState {
 
 export interface TaskStoreActions {
   addTask: (task: Task) => void
+  changeTaskStatus: (id: string, newStatus: TaskStatus) => void
   updateTask: (id: string, updates: Partial<Task>) => void
   deleteTask: (id: string, cascade: boolean) => void
+  duplicateTask: (id: string) => void
   setTasks: (tasks: Task[]) => void
 }
 
@@ -35,10 +38,25 @@ export const useTaskStore = create<TaskStore>()(
     immer(set => ({
       tasks: [],
       tasksByStatus: createTasksByStatus([]),
-      tasksByParent: createTasksByParent({}),
+      tasksByParent: createTasksByParent([]),
       addTask: task =>
         set(state => {
           state.tasks.push(task)
+          rebuildDerivedState(state)
+        }),
+      changeTaskStatus: (id, newStatus) =>
+        set(state => {
+          const task = state.tasks.find(candidate => candidate.id === id)
+
+          if (!task) {
+            return
+          }
+
+          if (task.status === newStatus) {
+            return
+          }
+
+          task.status = newStatus
           rebuildDerivedState(state)
         }),
       updateTask: (id, updates) =>

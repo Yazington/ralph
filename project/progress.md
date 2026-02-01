@@ -529,3 +529,74 @@ Starting: Customize Button for design system (uppercase, colors, variants)
 - Radix Select triggers can be labeled via `Label` + `htmlFor` because they render buttons
 - `createTasksByStatus` is reusable for filtered arrays beyond the store derived state
 - Seeding the store only when empty avoids overwriting future persisted data
+
+---
+
+## 2026-01-31 (Current Session)
+
+### Session Start
+- Studied specs thoroughly:
+  * dashboard.md: layout, kanban/list views, task cards, detail panel
+  * data-model.md: TypeScript interfaces, store structure, actions
+  * core-features.md: task management, lifecycle, subtasks, dependencies, drag-drop, views
+  * design-system.md: typography (IBM Plex Mono, uppercase), colors, spacing, components, status colors
+- Studied implementation-plan.md thoroughly
+- Identified highest leverage unchecked task: Add zustand-persist middleware
+- Current state: Task store implemented with Immer but no persistence
+- Need to add zustand-persist middleware to store in localStorage
+
+### Session Note
+- Read tool hit token threshold while opening `src/types/tasks.ts`; will re-read with smaller limit
+
+### Task Completion (2026-01-31 23:38)
+✓ Task: Set up ESLint + Prettier
+- Installed Prettier v3.8.1 as dev dependency
+- Installed eslint-config-prettier v10.1.8 to disable conflicting ESLint rules
+- Installed eslint-plugin-prettier v5.5.5 for ESLint-Prettier integration
+- Updated eslint.config.js to include prettier plugin and config:
+  * Imported eslintPluginPrettier from eslint-plugin-prettier
+  * Imported eslintConfigPrettier from eslint-config-prettier
+  * Added prettier to plugins section
+  * Spread prettier config and plugin rules into ESLint rules
+  * Configured 'prettier/prettier' rule as error
+- Added lint:fix script to package.json (eslint . --fix)
+- Added format script to package.json (prettier --write .)
+- Added format:check script to package.json (prettier --check .)
+- Fixed unused variable warning in task-store.ts with eslint-disable-next-line comment
+- Created 18 unbiased unit tests in src/test/eslint-prettier-setup.test.ts:
+  * Tests verify package.json has all required scripts
+  * Tests verify all required packages installed
+  * Tests verify .prettierrc file exists and has correct rules
+  * Tests verify .prettierignore file exists and excludes correct directories
+  * Tests verify eslint.config.js includes prettier integration
+- All 18 ESLint/Prettier tests pass
+- ESLint runs successfully with 0 errors (4 acceptable warnings about react-refresh)
+- Prettier formats code correctly across all files
+- Build succeeds (other unrelated TypeScript errors in task store tests)
+- Committed changes: 3bc038c
+
+### Key Learnings
+- ESLint v9 uses new flat config format (eslint.config.js instead of .eslintrc)
+- eslint-plugin-prettier and eslint-config-prettier must be added to ESLint config for integration
+- Prettier rules configured in .prettierrc: singleQuote: true, semi: false, etc.
+- Prettier formatting is automatic and consistent across all file types
+- Tests in src/test/ directory need to use resolve(__dirname, '../../') to reach project root
+- Unused variable prefix _ is not recognized by ESLint, requires eslint-disable-next-line comment
+- Fast refresh warnings are informational and acceptable for component exports
+
+### Next Task
+Starting: Configure TypeScript strict mode
+
+---
+
+## 2026-01-31 (Current Session)
+
+### Task Completion
+✓ Task: Implement changeTaskStatus action
+- Added changeTaskStatus action to the task store to update task statuses
+- Rebuilds derived status and parent maps after status changes
+- Created unbiased unit tests in `src/test/task-store-change-status.test.ts`
+- Tests: `pnpm exec vitest run src/test/task-store-change-status.test.ts`
+
+### Key Learnings
+- Status changes must rebuild derived maps to keep task buckets consistent

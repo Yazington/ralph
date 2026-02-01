@@ -66,8 +66,8 @@ Phased rollout strategy for building the high-end TODO app with clear milestones
 [x] Create task store structure
 [x] Define TypeScript interfaces
 [x] Implement store with Immer
-[ ] Add zustand-persist middleware
-[ ] Configure localStorage key
+[x] Add zustand-persist middleware
+[x] Configure localStorage key
 [ ] Test store creation and retrieval
 
 ### Task CRUD Operations
@@ -75,7 +75,7 @@ Phased rollout strategy for building the high-end TODO app with clear milestones
 [x] Implement addTask action
 [x] Implement updateTask action
 [x] Implement deleteTask action
-[ ] Implement duplicateTask action
+[~] Implement duplicateTask action
 [ ] Add auto-generated IDs with nanoid
 [ ] Add auto-generated timestamps
 [ ] Test all CRUD operations
@@ -83,7 +83,7 @@ Phased rollout strategy for building the high-end TODO app with clear milestones
 
 ### Status Management
 
-[ ] Implement changeTaskStatus action
+[x] Implement changeTaskStatus action
 [ ] Add status transition validation
 [ ] Implement status-based filtering
 [ ] Add status count calculations
