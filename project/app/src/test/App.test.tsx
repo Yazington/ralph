@@ -10,13 +10,15 @@ describe('App Component', () => {
   it('should render the command center header and primary action', () => {
     render(<App />)
     expect(screen.getByText('TASK COMMAND CENTER')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /NEW TASK/i })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: /NEW TASK/i })
+    ).toBeInTheDocument()
   })
 
   it('should render all status columns', () => {
     render(<App />)
     const statuses = ['BACKLOG', 'TODO', 'IN PROGRESS', 'REVIEW', 'DONE']
-    statuses.forEach((status) => {
+    statuses.forEach(status => {
       expect(screen.getAllByText(status).length).toBeGreaterThan(0)
     })
   })

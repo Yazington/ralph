@@ -600,3 +600,46 @@ Starting: Configure TypeScript strict mode
 
 ### Key Learnings
 - Status changes must rebuild derived maps to keep task buckets consistent
+
+---
+
+## 2026-02-01 (Current Session)
+
+### Session Start
+- Studied specs thoroughly: core-features.md, data-model.md, dashboard.md, design-system.md
+- Studied implementation-plan.md thoroughly
+- Identified highest leverage unchecked task: Implement duplicateTask action
+- Updated implementation-plan.md to mark completed tasks:
+  * Add zustand-persist middleware [x]
+  * Configure localStorage key [x]
+- Updated implementation-plan.md to mark duplicateTask as in progress [~]
+
+### Task Completion (2026-02-01 04:45)
+✓ Task: Implement duplicateTask action
+- Installed nanoid v5.1.6 for ID generation
+- Implemented duplicateTask action in src/store/task-store.ts:
+  * Creates copy of existing task with new nanoid-generated ID
+  * Appends " - COPY" suffix to title
+  * Generates new createdAt and updatedAt timestamps
+  * Copies all task properties except dependencies and ID
+  * Recursively duplicates subtasks with proper parent ID mapping
+  * Does NOT copy dependencies as per specification
+- Created unbiased unit tests in src/test/task-store-duplicate-task.test.ts (9 tests):
+  * Tests new ID generation
+  * Tests " - COPY" suffix on title
+  * Tests new timestamps generation
+  * Tests dependencies are NOT copied
+  * Tests other task properties are copied
+  * Tests subtasks are duplicated recursively
+  * Tests nested subtasks (multi-level) are duplicated
+  * Tests no-op for non-existent task
+  * Tests derived state is rebuilt after duplication
+- All 9 tests pass
+- Lint passes (only 4 acceptable fast refresh warnings)
+- Build succeeds
+
+### Key Learnings
+- Nanoid can be used for generating unique IDs in Zustand store
+- Recursive duplication requires tracking ID mappings for parent-child relationships
+- DuplicateTask should not copy dependencies to avoid circular references
+- TypeScript ISO timestamp comparison requires using Date.getTime() for numeric comparison

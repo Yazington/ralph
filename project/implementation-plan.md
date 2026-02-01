@@ -75,7 +75,7 @@ Phased rollout strategy for building the high-end TODO app with clear milestones
 [x] Implement addTask action
 [x] Implement updateTask action
 [x] Implement deleteTask action
-[~] Implement duplicateTask action
+[x] Implement duplicateTask action
 [ ] Add auto-generated IDs with nanoid
 [ ] Add auto-generated timestamps
 [ ] Test all CRUD operations

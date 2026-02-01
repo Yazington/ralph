@@ -24,6 +24,7 @@ export interface TaskStoreActions {
   deleteTask: (id: string, cascade: boolean) => void
   duplicateTask: (id: string) => void
   setTasks: (tasks: Task[]) => void
+  reset: () => void
 }
 
 export type TaskStore = TaskStoreState & TaskStoreActions
@@ -31,6 +32,52 @@ export type TaskStore = TaskStoreState & TaskStoreActions
 const rebuildDerivedState = (state: TaskStoreState) => {
   state.tasksByStatus = createTasksByStatus(state.tasks)
   state.tasksByParent = createTasksByParent(state.tasks)
+}
+
+const duplicateTaskRecursive = (
+  tasks: Task[],
+  taskId: string,
+  newParentId: string | null = null,
+  idMap: Map<string, string> = new Map()
+): Task | null => {
+  const task = tasks.find(t => t.id === taskId)
+
+  if (!task) {
+    return null
+  }
+
+  const newId = nanoid()
+  const now = new Date().toISOString()
+
+  idMap.set(task.id, newId)
+
+  const duplicatedTask: Task = {
+    ...task,
+    id: newId,
+    title: `${task.title} - COPY`,
+    createdAt: now,
+    updatedAt: now,
+    parentId: newParentId,
+    dependencies: [],
+    position: 0,
+  }
+
+  const subtasks = tasks.filter(t => t.parentId === taskId)
+
+  for (const subtask of subtasks) {
+    const duplicatedSubtask = duplicateTaskRecursive(
+      tasks,
+      subtask.id,
+      newId,
+      idMap
+    )
+
+    if (duplicatedSubtask) {
+      tasks.push(duplicatedSubtask)
+    }
+  }
+
+  return duplicatedTask
 }
 
 export const useTaskStore = create<TaskStore>()(
@@ -96,14 +143,35 @@ export const useTaskStore = create<TaskStore>()(
 
           rebuildDerivedState(state)
         }),
+      duplicateTask: id =>
+        set(state => {
+          const task = state.tasks.find(candidate => candidate.id === id)
+
+          if (!task) {
+            return
+          }
+
+          const duplicatedTask = duplicateTaskRecursive(state.tasks, id)
+
+          if (duplicatedTask) {
+            state.tasks.push(duplicatedTask)
+            rebuildDerivedState(state)
+          }
+        }),
       setTasks: tasks =>
         set(state => {
           state.tasks = tasks
           rebuildDerivedState(state)
         }),
+      reset: () =>
+        set(state => {
+          state.tasks = []
+          state.tasksByStatus = createTasksByStatus([])
+          state.tasksByParent = createTasksByParent([])
+        }),
     })),
     {
       name: 'ralph-tasks',
-    },
-  ),
+    }
+  )
 )

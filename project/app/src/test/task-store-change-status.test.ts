@@ -41,15 +41,15 @@ describe('task store changeTaskStatus action', () => {
     const nextState = useTaskStore.getState()
 
     expect(nextState.tasks.find(task => task.id === 'task-1')?.status).toBe(
-      TaskStatus.DONE,
+      TaskStatus.DONE
     )
     expect(nextState.tasksByStatus[TaskStatus.BACKLOG]).toEqual([])
-    expect(nextState.tasksByStatus[TaskStatus.DONE].map(task => task.id)).toEqual([
-      'task-1',
-    ])
-    expect(nextState.tasksByStatus[TaskStatus.TODO].map(task => task.id)).toEqual([
-      'task-2',
-    ])
+    expect(
+      nextState.tasksByStatus[TaskStatus.DONE].map(task => task.id)
+    ).toEqual(['task-1'])
+    expect(
+      nextState.tasksByStatus[TaskStatus.TODO].map(task => task.id)
+    ).toEqual(['task-2'])
   })
 
   it('keeps state unchanged when task is missing', () => {
@@ -63,9 +63,9 @@ describe('task store changeTaskStatus action', () => {
     const nextState = useTaskStore.getState()
 
     expect(nextState.tasks).toEqual([task])
-    expect(nextState.tasksByStatus[TaskStatus.REVIEW].map(task => task.id)).toEqual([
-      'task-3',
-    ])
+    expect(
+      nextState.tasksByStatus[TaskStatus.REVIEW].map(task => task.id)
+    ).toEqual(['task-3'])
     expect(nextState.tasksByStatus[TaskStatus.DONE]).toEqual([])
   })
 })

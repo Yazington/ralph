@@ -51,7 +51,10 @@ const STATUS_META: Record<
   [TaskStatus.DONE]: { label: 'DONE', badgeVariant: 'success' },
 }
 
-const PRIORITY_META: Record<Priority, { label: string; badgeVariant: BadgeVariant }> = {
+const PRIORITY_META: Record<
+  Priority,
+  { label: string; badgeVariant: BadgeVariant }
+> = {
   [Priority.LOW]: { label: 'LOW', badgeVariant: 'secondary' },
   [Priority.MEDIUM]: { label: 'MEDIUM', badgeVariant: 'info' },
   [Priority.HIGH]: { label: 'HIGH', badgeVariant: 'warning' },
@@ -205,7 +208,7 @@ function TaskCard({ task }: { task: Task }) {
         </span>
       </div>
       <div className="flex flex-wrap gap-2">
-        {labels.slice(0, 3).map((label) => (
+        {labels.slice(0, 3).map(label => (
           <Chip key={label} variant="outline">
             {label.toUpperCase()}
           </Chip>
@@ -218,17 +221,33 @@ function TaskCard({ task }: { task: Task }) {
   )
 }
 
-function StatTile({ label, value, hint }: { label: string; value: string; hint?: string }) {
+function StatTile({
+  label,
+  value,
+  hint,
+}: {
+  label: string
+  value: string
+  hint?: string
+}) {
   return (
     <Card padding="panel" className="gap-2">
       <CardDescription className="text-xs">{label}</CardDescription>
       <div className="text-lg font-semibold tracking-[0.08em]">{value}</div>
-      {hint ? <div className="text-xs text-muted-foreground">{hint}</div> : null}
+      {hint ? (
+        <div className="text-xs text-muted-foreground">{hint}</div>
+      ) : null}
     </Card>
   )
 }
 
-function StatusColumn({ status, tasks }: { status: TaskStatus; tasks: Task[] }) {
+function StatusColumn({
+  status,
+  tasks,
+}: {
+  status: TaskStatus
+  tasks: Task[]
+}) {
   const statusMeta = STATUS_META[status]
   const visibleTasks = tasks.slice(0, 2)
 
@@ -239,7 +258,10 @@ function StatusColumn({ status, tasks }: { status: TaskStatus; tasks: Task[] }) 
           <CardTitle className="text-sm tracking-[0.12em]">
             {statusMeta.label}
           </CardTitle>
-          <Badge variant="outline" className="border-border/40 text-muted-foreground">
+          <Badge
+            variant="outline"
+            className="border-border/40 text-muted-foreground"
+          >
             {tasks.length}
           </Badge>
         </div>
@@ -255,7 +277,7 @@ function StatusColumn({ status, tasks }: { status: TaskStatus; tasks: Task[] }) 
       </CardHeader>
       <CardContent className="space-y-3 pb-4">
         {visibleTasks.length > 0 ? (
-          visibleTasks.map((task) => <TaskCard key={task.id} task={task} />)
+          visibleTasks.map(task => <TaskCard key={task.id} task={task} />)
         ) : (
           <Panel className="border-border/30 border-dashed bg-card/50 text-xs text-muted-foreground">
             NO TASKS IN THIS COLUMN
@@ -277,9 +299,9 @@ function StatusColumn({ status, tasks }: { status: TaskStatus; tasks: Task[] }) 
 }
 
 function App() {
-  const tasks = useTaskStore((state) => state.tasks)
-  const tasksByStatus = useTaskStore((state) => state.tasksByStatus)
-  const setTasks = useTaskStore((state) => state.setTasks)
+  const tasks = useTaskStore(state => state.tasks)
+  const tasksByStatus = useTaskStore(state => state.tasksByStatus)
+  const setTasks = useTaskStore(state => state.setTasks)
   const [query, setQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<TaskStatus | 'all'>('all')
   const [viewMode, setViewMode] = useState<'kanban' | 'list'>('kanban')
@@ -297,12 +319,13 @@ function App() {
   const filteredTasks = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase()
 
-    return tasks.filter((task) => {
+    return tasks.filter(task => {
       const matchesQuery =
         normalizedQuery.length === 0 ||
         task.title.toLowerCase().includes(normalizedQuery) ||
         task.description.toLowerCase().includes(normalizedQuery)
-      const matchesStatus = statusFilter === 'all' || task.status === statusFilter
+      const matchesStatus =
+        statusFilter === 'all' || task.status === statusFilter
 
       return matchesQuery && matchesStatus
     })
@@ -317,9 +340,10 @@ function App() {
   const doneTasks = tasksByStatus[TaskStatus.DONE]?.length ?? 0
   const inProgressTasks = tasksByStatus[TaskStatus.IN_PROGRESS]?.length ?? 0
   const dueSoonTasks = tasks.filter(
-    (task) => task.dueDate && task.status !== TaskStatus.DONE
+    task => task.dueDate && task.status !== TaskStatus.DONE
   ).length
-  const completionRate = totalTasks > 0 ? Math.round((doneTasks / totalTasks) * 100) : 0
+  const completionRate =
+    totalTasks > 0 ? Math.round((doneTasks / totalTasks) * 100) : 0
   const activeStatusLabel = getActiveStatusLabel(statusFilter)
 
   return (
@@ -334,7 +358,10 @@ function App() {
             <div className="space-y-3">
               <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
                 <Badge variant="secondary">RALPH OS</Badge>
-                <Badge variant="outline" className="border-border/40 text-muted-foreground">
+                <Badge
+                  variant="outline"
+                  className="border-border/40 text-muted-foreground"
+                >
                   SHOWING {filteredTasks.length} OF {totalTasks}
                 </Badge>
                 <span>SEED MODE ACTIVE</span>
@@ -366,7 +393,7 @@ function App() {
                   id="task-search"
                   placeholder="SEARCH TASKS"
                   value={query}
-                  onChange={(event) => setQuery(event.target.value)}
+                  onChange={event => setQuery(event.target.value)}
                   className="pl-9"
                 />
               </div>
@@ -375,7 +402,7 @@ function App() {
               <Label htmlFor="status-filter">STATUS FILTER</Label>
               <Select
                 value={statusFilter}
-                onValueChange={(value) =>
+                onValueChange={value =>
                   setStatusFilter(value as TaskStatus | 'all')
                 }
               >
@@ -384,7 +411,7 @@ function App() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">ALL STATUSES</SelectItem>
-                  {STATUS_ORDER.map((status) => (
+                  {STATUS_ORDER.map(status => (
                     <SelectItem key={status} value={status}>
                       {STATUS_META[status].label}
                     </SelectItem>
@@ -396,7 +423,7 @@ function App() {
               <Label htmlFor="view-mode">VIEW MODE</Label>
               <Select
                 value={viewMode}
-                onValueChange={(value) => setViewMode(value as 'kanban' | 'list')}
+                onValueChange={value => setViewMode(value as 'kanban' | 'list')}
               >
                 <SelectTrigger id="view-mode">
                   <SelectValue placeholder="KANBAN" />
@@ -427,12 +454,19 @@ function App() {
                   <Filter className="size-4" />
                   QUICK STATS
                 </div>
-                <Badge variant="outline" className="border-border/40 text-muted-foreground">
+                <Badge
+                  variant="outline"
+                  className="border-border/40 text-muted-foreground"
+                >
                   {completionRate}% DONE
                 </Badge>
               </div>
               <div className="grid gap-3">
-                <StatTile label="TOTAL TASKS" value={`${totalTasks}`} hint="ALL STATUSES" />
+                <StatTile
+                  label="TOTAL TASKS"
+                  value={`${totalTasks}`}
+                  hint="ALL STATUSES"
+                />
                 <StatTile
                   label="IN PROGRESS"
                   value={`${inProgressTasks}`}
@@ -448,7 +482,9 @@ function App() {
             </Panel>
             <Panel className="space-y-3 border-border/30">
               <div className="flex items-center justify-between">
-                <div className="text-xs text-muted-foreground">ACTIVE FILTERS</div>
+                <div className="text-xs text-muted-foreground">
+                  ACTIVE FILTERS
+                </div>
                 <Badge variant="secondary">{viewMode.toUpperCase()}</Badge>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -459,18 +495,14 @@ function App() {
                 >
                   STATUS: {activeStatusLabel}
                 </Chip>
-                <Chip
-                  variant="outline"
-                  removable
-                  onRemove={() => setQuery('')}
-                >
+                <Chip variant="outline" removable onRemove={() => setQuery('')}>
                   QUERY: {query.trim() ? query.toUpperCase() : 'ALL'}
                 </Chip>
               </div>
             </Panel>
           </aside>
           <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
-            {STATUS_ORDER.map((status) => (
+            {STATUS_ORDER.map(status => (
               <StatusColumn
                 key={status}
                 status={status}

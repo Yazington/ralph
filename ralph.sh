@@ -121,7 +121,7 @@ while true; do
     
     info "Executing build..."
     OPENCODE_PERMISSION="$OPENCODE_PERMISSION" \
-    opencode run --print-logs --agent build -m zai-coding-plan/glm-4.7 --log-level "$OPENCODE_LOG_LEVEL" "$prompt" 2>&1 | \
+    opencode run --print-logs --agent build -m openai/gpt-5.2-codex --variant xhigh --log-level "$OPENCODE_LOG_LEVEL" "$prompt" 2>&1 | \
     (
         while IFS= read -r line; do
             echo "$line"

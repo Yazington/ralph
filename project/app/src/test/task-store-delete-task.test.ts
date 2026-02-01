@@ -49,13 +49,13 @@ describe('task store deleteTask action', () => {
 
     const nextState = useTaskStore.getState()
 
-    expect(nextState.tasks.map((task) => task.id)).toEqual(['task-4'])
+    expect(nextState.tasks.map(task => task.id)).toEqual(['task-4'])
     expect(nextState.tasksByStatus[TaskStatus.BACKLOG]).toEqual([])
     expect(nextState.tasksByStatus[TaskStatus.TODO]).toEqual([])
     expect(nextState.tasksByStatus[TaskStatus.REVIEW]).toEqual([])
-    expect(nextState.tasksByStatus[TaskStatus.IN_PROGRESS].map((task) => task.id)).toEqual([
-      'task-4',
-    ])
+    expect(
+      nextState.tasksByStatus[TaskStatus.IN_PROGRESS].map(task => task.id)
+    ).toEqual(['task-4'])
     expect(nextState.tasksByParent).toEqual({})
   })
 
@@ -77,14 +77,16 @@ describe('task store deleteTask action', () => {
     useTaskStore.getState().deleteTask('task-1', false)
 
     const nextState = useTaskStore.getState()
-    const promotedChild = nextState.tasks.find((task) => task.id === 'task-2')
-    const nestedGrandchild = nextState.tasks.find((task) => task.id === 'task-3')
+    const promotedChild = nextState.tasks.find(task => task.id === 'task-2')
+    const nestedGrandchild = nextState.tasks.find(task => task.id === 'task-3')
 
-    expect(nextState.tasks.map((task) => task.id)).toEqual(['task-2', 'task-3'])
+    expect(nextState.tasks.map(task => task.id)).toEqual(['task-2', 'task-3'])
     expect(promotedChild?.parentId).toBeNull()
     expect(nestedGrandchild?.parentId).toBe('task-2')
     expect(nextState.tasksByParent['task-1']).toBeUndefined()
-    expect(nextState.tasksByParent['task-2'].map((task) => task.id)).toEqual(['task-3'])
+    expect(nextState.tasksByParent['task-2'].map(task => task.id)).toEqual([
+      'task-3',
+    ])
   })
 
   it('ignores delete when task is missing', () => {
@@ -96,6 +98,6 @@ describe('task store deleteTask action', () => {
 
     const nextState = useTaskStore.getState()
 
-    expect(nextState.tasks.map((candidate) => candidate.id)).toEqual(['task-1'])
+    expect(nextState.tasks.map(candidate => candidate.id)).toEqual(['task-1'])
   })
 })
