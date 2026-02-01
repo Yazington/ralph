@@ -116,7 +116,7 @@ while true; do
     
     info "Executing build..."
     OPENCODE_PERMISSION="$OPENCODE_PERMISSION" \
-    opencode run --print-logs --agent build -m zai-coding-plan/glm-4.7 --log-level "$OPENCODE_LOG_LEVEL" "$prompt"
+    opencode run --print-logs --agent build -m zai-coding-plan/glm-4.7 --log-level "$OPENCODE_LOG_LEVEL" "$prompt" 2>&1 | tee -a "$LOG_FILE"
     echo
 
     iteration=$((iteration + 1))
