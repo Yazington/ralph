@@ -27,7 +27,7 @@ Phased rollout strategy for building the high-end TODO app with clear milestones
 [x] Configure pnpm
 [x] Install Tailwind CSS
 [x] Set up shadcn/ui (install base components, then customize to match design system)
-[ ] Configure IBM Plex Mono font
+[x] Configure IBM Plex Mono font
 [ ] Set up ESLint + Prettier
 [ ] Configure TypeScript strict mode
 
