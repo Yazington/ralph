@@ -1,7 +1,11 @@
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 
-import { createTasksByParent, createTasksByStatus } from '@/store/task-store.utils'
+import {
+  collectTaskSubtreeIds,
+  createTasksByParent,
+  createTasksByStatus,
+} from '@/store/task-store.utils'
 import type { Task } from '@/types/tasks'
 import { TaskStatus } from '@/types/tasks'
 
@@ -14,6 +18,7 @@ export interface TaskStoreState {
 export interface TaskStoreActions {
   addTask: (task: Task) => void
   updateTask: (id: string, updates: Partial<Task>) => void
+  deleteTask: (id: string, cascade: boolean) => void
   setTasks: (tasks: Task[]) => void
 }
 
@@ -49,6 +54,29 @@ export const useTaskStore = create<TaskStore>()(
         const { id: _ignoredId, ...safeUpdates } = updates
 
         Object.assign(task, safeUpdates)
+        rebuildDerivedState(state)
+      }),
+    deleteTask: (id, cascade) =>
+      set((state) => {
+        const hasTask = state.tasks.some((task) => task.id === id)
+
+        if (!hasTask) {
+          return
+        }
+
+        if (cascade) {
+          const idsToDelete = collectTaskSubtreeIds(state.tasks, id)
+          state.tasks = state.tasks.filter((task) => !idsToDelete.has(task.id))
+        } else {
+          state.tasks.forEach((task) => {
+            if (task.parentId === id) {
+              task.parentId = null
+            }
+          })
+
+          state.tasks = state.tasks.filter((task) => task.id !== id)
+        }
+
         rebuildDerivedState(state)
       }),
     setTasks: (tasks) =>

@@ -479,3 +479,27 @@ Starting: Customize Button for design system (uppercase, colors, variants)
 ### Key Learnings
 - With Zustand + Immer, updating a task can use draft mutation plus derived map rebuilds
 - Guarding against `id` changes keeps updates safe until formal validation is added
+
+---
+
+## 2026-01-31 23:59
+
+### Session Note
+- Read tool hit token threshold while opening `src/store/task-store.ts`; will re-read with smaller requests
+
+---
+
+## 2026-01-31 23:18
+
+### Task Completion
+✓ Task: Implement deleteTask action
+- Added `collectTaskSubtreeIds` helper in `src/store/task-store.utils.ts`
+- Added `deleteTask` action to `src/store/task-store.ts` with cascade and non-cascade behavior
+- Non-cascade delete promotes direct subtasks to top-level (parentId set to null)
+- Added unbiased unit tests in `src/test/task-store-delete-task.test.ts`
+- Updated implementation-plan.md to mark task as completed
+- Tests: `pnpm exec vitest run src/test/task-store-delete-task.test.ts`
+
+### Key Learnings
+- `pnpm test:run -- <file>` runs the full suite; `pnpm exec vitest run <file>` scopes to the file
+- Using a parent map simplifies collecting all descendant task ids for cascade deletes

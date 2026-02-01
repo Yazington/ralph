@@ -23,3 +23,29 @@ export const createTasksByParent = (tasks: Task[]): Record<string, Task[]> =>
 
     return grouped
   }, {})
+
+export const collectTaskSubtreeIds = (tasks: Task[], rootId: string): Set<string> => {
+  const tasksByParent = createTasksByParent(tasks)
+  const ids = new Set<string>()
+  const stack = [rootId]
+
+  while (stack.length > 0) {
+    const currentId = stack.pop()
+
+    if (!currentId || ids.has(currentId)) {
+      continue
+    }
+
+    ids.add(currentId)
+
+    const children = tasksByParent[currentId] ?? []
+
+    children.forEach((child) => {
+      if (!ids.has(child.id)) {
+        stack.push(child.id)
+      }
+    })
+  }
+
+  return ids
+}
