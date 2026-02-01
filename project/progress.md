@@ -194,3 +194,6 @@ Starting: Initialize Vite + React + TypeScript project
 - IBM Plex Mono includes multiple language subsets (latin, latin-ext, cyrillic, cyrillic-ext, vietnamese)
 - Font files are automatically bundled and optimized by Vite
 - text-transform: uppercase in CSS ensures all UI text is uppercase as per design system
+
+### Next Task
+Starting: Set up ESLint + Prettier
