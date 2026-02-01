@@ -293,3 +293,104 @@ Starting: Customize Button for design system (uppercase, colors, variants)
 - Conditional padding patterns in shadcn components use attribute selectors ([.border-b]:pb-4)
 - Data-testid simplifies component testing in React Testing Library
 
+
+### Task Started (2026-01-31 22:07)
+[x] Task: Install shadcn/ui Input component
+[x] Task: Customize Input for design system (uppercase placeholder, colors)
+- Installed shadcn/ui Input component via `pnpm dlx shadcn@latest add input`
+- Customized Input component for design system:
+  * Added `uppercase` class for uppercase text
+  * Added `placeholder:uppercase` for uppercase placeholder text
+  * Changed background to `bg-input` (panel alt background: #101d1e)
+  * Changed border to `border-border/20` for 20% opacity border
+  * Removed dark mode opacity modifier (dark:bg-input/30) in favor of solid color
+- Created unbiased unit tests (8 tests) in src/input-customization.test.tsx:
+  * Tests verify design system colors in CSS variables (lowercase hex)
+  * Tests verify uppercase text and placeholder
+  * Tests verify panel alt background, border opacity, medium radius, padding, focus styles
+- Fixed failing tests in button-customization.test.tsx (uppercase hex → lowercase)
+- Fixed failing test in button-installation.test.tsx (quote mismatch)
+- All tests pass (110 tests across 11 test files)
+- Lint passes, build succeeds
+- Updated implementation-plan.md to mark tasks as completed [x]
+
+### Key Learnings
+- CSS hex values in variables are lowercase; tests must match case
+- shadcn/ui Input component uses `dark:bg-input/30` by default; design system uses solid colors
+- Placeholder uppercase requires `placeholder:uppercase` class
+- Border opacity with custom colors uses Tailwind opacity modifier: `border-border/20`
+
+---
+
+### Task Completion (2026-01-31 22:30)
+✓ Task: Install shadcn/ui Select component
+✓ Task: Customize Select for design system (uppercase options, colors)
+- Installed shadcn/ui Select component via `npx shadcn@latest add select`
+- Customized Select component for design system:
+  * Fixed SelectTrigger className (was incorrectly using ScrollUpButton styles)
+  * Added uppercase, bg-input, border-border/20, rounded-md, placeholder:uppercase, hover:bg-input/80
+  * Simplified SelectLabel with uppercase text
+  * SelectItem already had uppercase
+- Created unbiased unit tests (8 tests) in src/select-customization.test.tsx
+- Fixed TypeScript compilation error (unused imports in test file)
+- All tests pass (118 tests across 12 test files)
+- Updated implementation-plan.md
+
+### Task Completion (2026-01-31 22:35)
+✓ Task: Install shadcn/ui Badge component
+✓ Task: Customize Badge for design system (status colors, colors)
+- Installed shadcn/ui Badge component via `npx shadcn@latest add badge`
+- Customized Badge component for design system:
+  * Added uppercase class to base styles
+  * Added status variants: warning (chart-3), success (chart-2), info (chart-1) using chart colors
+  * Variants map to 5-phase task status system (BACKLOG→secondary, TODO→info, IN PROGRESS→warning, REVIEW→primary?, DONE→success)
+- Created unbiased unit tests (10 tests) in src/badge-customization.test.tsx
+- All tests pass (128 tests across 13 test files)
+
+### Task Completion (2026-01-31 22:40)
+✓ Task: Install shadcn/ui Label component
+✓ Task: Customize Label for design system
+- Installed shadcn/ui Label component via `npx shadcn@latest add label`
+- Customized Label component: added uppercase class
+- Created unbiased unit tests (3 tests) in src/label-customization.test.tsx
+- All tests pass (131 tests across 14 test files)
+
+### Task Completion (2026-01-31 22:45)
+✓ Task: Create Chip component (extend shadcn patterns)
+- Created custom Chip component in src/components/ui/chip.tsx
+- Uses class-variance-authority with same variants as Badge plus removable variant
+- Added removable button with X icon (lucide-react)
+- Supports onRemove callback
+- Created unbiased unit tests (9 tests) in src/chip-customization.test.tsx
+- All tests pass (140 tests across 15 test files)
+
+### Task Completion (2026-01-31 22:50)
+✓ Task: Setup global CSS with design system tokens
+- Added status color CSS variables to :root and .dark blocks:
+  * --status-backlog: var(--muted)
+  * --status-todo: var(--chart-1)
+  * --status-in-progress: var(--chart-3)
+  * --status-review: var(--chart-5)
+  * --status-done: var(--chart-2)
+- Added status colors to Tailwind theme mapping (@theme inline)
+- All tests continue to pass (140 tests)
+- Updated implementation-plan.md
+
+### Key Learnings
+- shadcn/ui Select component required careful customization of Trigger className
+- Status colors can be mapped to existing chart CSS variables
+- Chip component can reuse badge variants with removable state
+- CSS variable additions need to be added to both :root and .dark blocks
+
+---
+
+### Task Completion (2026-01-31 22:50)
+✓ Task: Define TypeScript interfaces
+- Created `src/types/tasks.ts` with TaskStatus, Priority, Task, and TaskFilters definitions
+- Added unbiased unit tests in `src/task-types.test.ts` to validate exported values and shapes
+- Updated implementation-plan.md to mark task as completed
+- All tests pass (144 tests across 16 test files)
+
+### Key Learnings
+- TypeScript `erasableSyntaxOnly` disallows enums; use const objects + union types instead
+- For value + type exports, a const object paired with a derived union type avoids runtime enum output

@@ -36,24 +36,24 @@ Phased rollout strategy for building the high-end TODO app with clear milestones
 [x] Install shadcn/ui Button component
 [x] Customize Button for design system (uppercase, colors, variants)
 [x] Create Panel/Card component (custom, extend shadcn patterns)
-[ ] Install shadcn/ui Input component
-[ ] Customize Input for design system (uppercase placeholder, colors)
-[ ] Install shadcn/ui Select component
-[ ] Customize Select for design system (uppercase options, colors)
-[ ] Install shadcn/ui Badge component
-[ ] Customize Badge for design system (status colors, colors)
-[ ] Install shadcn/ui Label component
-[ ] Create Chip component (extend shadcn patterns)
-[ ] Setup global CSS with design system tokens
+[x] Install shadcn/ui Input component
+[x] Customize Input for design system (uppercase placeholder, colors)
+[x] Install shadcn/ui Select component
+[x] Customize Select for design system (uppercase options, colors)
+[x] Install shadcn/ui Badge component
+[x] Customize Badge for design system (status colors, colors)
+[x] Install shadcn/ui Label component
+[x] Create Chip component (extend shadcn patterns)
+[x] Setup global CSS with design system tokens
 
 ### Design System Implementation
 
-[ ] Define color palette in Tailwind config
-[ ] Create typography utilities (uppercase only)
-[ ] Setup spacing scale
-[ ] Create shadow utilities
-[ ] Setup border radius utilities
-[ ] Test all design system tokens
+[x] Define color palette in Tailwind config
+[x] Create typography utilities (uppercase only)
+[x] Setup spacing scale
+[x] Create shadow utilities
+[x] Setup border radius utilities
+[x] Test all design system tokens
 
 ---
 
@@ -62,7 +62,7 @@ Phased rollout strategy for building the high-end TODO app with clear milestones
 ### Zustand Store Setup
 
 [ ] Create task store structure
-[ ] Define TypeScript interfaces
+[x] Define TypeScript interfaces
 [ ] Implement store with Immer
 [ ] Add zustand-persist middleware
 [ ] Configure localStorage key
