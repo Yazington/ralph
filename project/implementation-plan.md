@@ -25,7 +25,7 @@ Phased rollout strategy for building the high-end TODO app with clear milestones
 
 [x] Initialize Vite + React + TypeScript project
 [ ] Configure pnpm
-[ ] Install Tailwind CSS
+[x] Install Tailwind CSS
 [ ] Set up shadcn/ui (install base components, then customize to match design system)
 [ ] Configure IBM Plex Mono font
 [ ] Set up ESLint + Prettier

@@ -59,3 +59,33 @@ Starting: Initialize Vite + React + TypeScript project
 - Vitest requires proper mocking of public assets (/vite.svg) for tests
 - Need to import `vi` from vitest in test setup (not rely on globals)
 - Project structure: app/src contains source code and tests
+
+---
+
+### Task Completion (2026-01-31 20:49)
+✓ Task: Install Tailwind CSS
+- Installed Tailwind CSS v4.1.18 and @tailwindcss/vite v4.1.18 using pnpm
+- Updated vite.config.ts to add Tailwind Vite plugin
+- Added @import "tailwindcss" directive to src/index.css
+- Created unbiased unit tests in src/tailwind.test.tsx:
+  * Tests element with flex utility classes
+  * Tests responsive Tailwind classes (p-4 md:p-8 lg:p-12)
+  * Tests color and spacing utilities (text-blue-500 bg-gray-100 mt-4)
+- All tests pass (6/6 - 3 from App.test.tsx, 3 from tailwind.test.tsx)
+- Build succeeds with no errors
+- Lint passes with no issues
+- Tailwind v4 uses new Vite plugin method - no tailwind.config.js needed
+- CSS-first configuration approach in v4
+
+### Key Learnings
+- Tailwind CSS v4.1 has a new installation method using Vite plugin
+- No need for tailwind.config.js file - uses CSS-first configuration
+- Import Tailwind with simple @import "tailwindcss" directive in CSS
+- Tailwind v4 automatically detects content files through Vite module graph
+- CSS variables are now theme values, accessible via var() in CSS
+- Preflight is included by default in v4
+
+---
+
+### Next Task
+Starting: Configure pnpm
