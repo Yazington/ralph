@@ -50,3 +50,4 @@
 - Implemented delete with undo toast using scheduleDeletionWithUndo helper; tasks are removed immediately with a 5-second undo toast that auto-dismisses or can be manually dismissed.
 - Added Toast component with calm aesthetic (muted background, accent cyan undo button) that slides in from bottom; toast restores deleted task when Undo is clicked, maintaining task order and completion status.
 - Verified build-dev spec: pnpm install completed, pnpm run dev starts successfully on localhost:5173, lint passes with 0 errors, typecheck passes with no TypeScript issues.
+- Fixed spacing-shape spec: Updated border radius values from Tailwind defaults to match spec—panel radius now uses custom 16px (was 24px rounded-3xl), and controls use custom 10px (was 8px rounded-lg). Added custom borderRadius config to tailwind.config.ts.
