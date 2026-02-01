@@ -195,5 +195,36 @@ Starting: Initialize Vite + React + TypeScript project
 - Font files are automatically bundled and optimized by Vite
 - text-transform: uppercase in CSS ensures all UI text is uppercase as per design system
 
+### Task Completion (2026-01-31 21:24)
+✓ Task: Set up ESLint + Prettier
+- Verified ESLint configuration in eslint.config.js
+- Verified Prettier configuration in .prettierrc
+- Verified package.json includes lint and format scripts
+- All 18 unit tests pass in eslint-prettier-setup.test.ts
+- Lint passes with no errors
+- Prettier check passes with no formatting issues
+- Build succeeds with no errors
+
+### Key Learnings
+- ESLint v9 uses flat config format (eslint.config.js)
+- Prettier integration uses eslint-plugin-prettier and eslint-config-prettier
+- Configuration includes React Hooks and React Refresh plugins
+- Test environment configuration for test files uses Node.js globals
+
+### Task Completion (2026-01-31 21:30)
+✓ Task: Configure TypeScript strict mode
+- Verified tsconfig.app.json has strict: true and other strict flags
+- Verified tsconfig.node.json also has strict mode enabled
+- Verified path aliases are configured correctly
+- All 14 unit tests pass in typescript-strict-mode.test.ts
+- TypeScript compilation passes with no errors
+- Build succeeds with no errors
+
+### Key Learnings
+- TypeScript strict mode is already enabled by default in Vite React TS template
+- tsconfig files use JSON with comments (JSONC), requiring custom parsing for tests
+- tsconfig.app.json includes src directory (including test files)
+- tsconfig.node.json includes vite.config.ts only
+
 ### Next Task
-Starting: Set up ESLint + Prettier
+Starting: Install shadcn/ui Button component
