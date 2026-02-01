@@ -226,5 +226,19 @@ Starting: Initialize Vite + React + TypeScript project
 - tsconfig.app.json includes src directory (including test files)
 - tsconfig.node.json includes vite.config.ts only
 
+### Task Completion (2026-01-31 21:34)
+✓ Task: Install shadcn/ui Button component
+- Installed button component using `pnpm dlx shadcn@latest add button`
+- Button component created at src/components/ui/button.tsx
+- All 10 unit tests pass in button-installation.test.tsx
+- Verified component renders with default props and variants
+- Verified dependencies (class-variance-authority, @radix-ui/react-slot, cn utility)
+
+### Key Learnings
+- shadcn/ui CLI `add` command installs components into configured components directory
+- Button component uses class-variance-authority for variant and size styling
+- Component supports `asChild` prop to render as different element via Slot
+- Path alias `@/` must be configured in Vitest config for tests to resolve imports
+
 ### Next Task
-Starting: Install shadcn/ui Button component
+Starting: Customize Button for design system (uppercase, colors, variants)
