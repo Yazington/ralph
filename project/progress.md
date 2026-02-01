@@ -418,3 +418,22 @@ Starting: Customize Button for design system (uppercase, colors, variants)
 ### Key Learnings
 - Zustand TypeScript stores use `create<StoreState>()((set, get) => ({ ... }))` for typed state
 - Derived maps can be built from source arrays to keep store structure predictable
+
+---
+
+## 2026-01-31 23:40
+
+### Task Completion
+✓ Task: Implement store with Immer
+- Reviewed Zustand Immer middleware documentation (extra parentheses in `create<State>()(immer(...))`)
+- Added `immer` v11.1.3 as a direct dependency
+- Updated `src/store/task-store.ts` to use Immer middleware and added `setTasks` action
+- `setTasks` recomputes `tasksByStatus` and `tasksByParent` to keep derived maps in sync
+- Added unbiased unit tests in `src/task-store-immer.test.ts`
+- Tests pass (`pnpm test:run -- task-store-immer.test.ts` ran full suite: 147 tests)
+
+### Key Learnings
+- Zustand Immer middleware requires `immer` as a direct dependency
+- The typed initializer pattern uses `create<State>()(immer((set) => ({ ... })))`
+- Mutating the Immer draft keeps previous state references unchanged
+- Context7 query for Zustand docs hit token threshold; used Zustand docs via web instead
