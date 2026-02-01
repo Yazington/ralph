@@ -68,29 +68,6 @@ info() { printf "%b\n" "${C_GREEN}$*${C_RESET}"; }
 warn() { printf "%b\n" "${C_YELLOW}$*${C_RESET}"; }
 muted() { printf "%b\n" "${C_DIM}$*${C_RESET}"; }
 
-ansi_to_html() {
-    local text="$1"
-    text=$(printf '%s' "$text" | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g')
-    text=$(printf '%s' "$text" | sed -e 's/\x1b\[0m/<\/span>/g' \
-        -e 's/\x1b\[1m/<span class="bold">/g' \
-        -e 's/\x1b\[2m/<span class="dim">/g' \
-        -e 's/\x1b\[31m/<span class="red">/g' \
-        -e 's/\x1b\[32m/<span class="green">/g' \
-        -e 's/\x1b\[33m/<span class="yellow">/g' \
-        -e 's/\x1b\[34m/<span class="blue">/g' \
-        -e 's/\x1b\[36m/<span class="cyan">/g' \
-        -e 's/\x1b\[35m/<span class="magenta">/g' \
-        -e 's/\x1b\[37m/<span class="white">/g' \
-        -e 's/\x1b\[90m/<span class="dim">/g' \
-        -e 's/\x1b\[91m/<span class="red">/g' \
-        -e 's/\x1b\[92m/<span class="green">/g' \
-        -e 's/\x1b\[93m/<span class="yellow">/g' \
-        -e 's/\x1b\[94m/<span class="blue">/g' \
-        -e 's/\x1b\[96m/<span class="cyan">/g' \
-        -e 's/\x1b\[95m/<span class="magenta">/g')
-    printf '<div class="log-line">%s</div>\n' "$text"
-}
-
 info "Starting loop..."
 
 # Restrict this loop's opencode calls from touching ralph.sh or .opencode.
@@ -157,4 +134,4 @@ while true; do
     iteration=$((iteration + 1))
 done
 
-echo '</script></body></html>' >> "$HTML_LOG_FILE"
+close_html_log "$HTML_LOG_FILE"
