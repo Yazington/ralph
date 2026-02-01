@@ -394,3 +394,27 @@ Starting: Customize Button for design system (uppercase, colors, variants)
 ### Key Learnings
 - TypeScript `erasableSyntaxOnly` disallows enums; use const objects + union types instead
 - For value + type exports, a const object paired with a derived union type avoids runtime enum output
+
+---
+
+## 2026-01-31 23:05
+
+### Session Note
+- apply_patch hit token threshold while updating implementation plan; will retry in smaller edits
+
+---
+
+## 2026-01-31 23:18
+
+### Task Completion
+✓ Task: Create task store structure
+- Added task store scaffolding in `src/store/task-store.ts` with initial state builder
+- Added grouping utilities in `src/store/task-store.utils.ts` for status and parent mappings
+- Installed `zustand` v5.0.11
+- Created unbiased unit tests in `src/task-store-structure.test.ts`
+- Tests pass (`pnpm test:run -- task-store-structure.test.ts` ran full suite: 146 tests)
+- Updated implementation-plan.md to mark task as completed
+
+### Key Learnings
+- Zustand TypeScript stores use `create<StoreState>()((set, get) => ({ ... }))` for typed state
+- Derived maps can be built from source arrays to keep store structure predictable
