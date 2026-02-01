@@ -68,7 +68,7 @@ Phased rollout strategy for building the high-end TODO app with clear milestones
 [x] Implement store with Immer
 [x] Add zustand-persist middleware
 [x] Configure localStorage key
-[ ] Test store creation and retrieval
+[~] Test store creation and retrieval
 
 ### Task CRUD Operations
 
@@ -76,7 +76,7 @@ Phased rollout strategy for building the high-end TODO app with clear milestones
 [x] Implement updateTask action
 [x] Implement deleteTask action
 [x] Implement duplicateTask action
-[ ] Add auto-generated IDs with nanoid
+[~] Add auto-generated IDs with nanoid
 [ ] Add auto-generated timestamps
 [ ] Test all CRUD operations
 [ ] Add seed data for basic task CRUD scenario

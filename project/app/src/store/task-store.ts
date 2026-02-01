@@ -80,6 +80,17 @@ const duplicateTaskRecursive = (
   return duplicatedTask
 }
 
+export const createTaskStoreState = (tasks: Task[] = []): TaskStoreState => {
+  const tasksByStatus = createTasksByStatus(tasks)
+  const tasksByParent = createTasksByParent(tasks)
+
+  return {
+    tasks,
+    tasksByStatus,
+    tasksByParent,
+  }
+}
+
 export const useTaskStore = create<TaskStore>()(
   persist(
     immer(set => ({

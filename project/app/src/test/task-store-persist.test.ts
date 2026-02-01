@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { renderHook, cleanup, act } from '@testing-library/react'
 
 import { useTaskStore } from '@/store/task-store'
@@ -12,6 +12,43 @@ describe('task-store-persist', () => {
     act(() => {
       useTaskStore.getState().reset()
     })
+  })
+
+  it('should load data from localStorage on hydration', () => {
+    const mockTasks = [
+      {
+        id: 'existing-1',
+        title: 'EXISTING TASK',
+        description: '',
+        status: TaskStatus.BACKLOG,
+        priority: 'low',
+        dueDate: null,
+        labels: [],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        parentId: null,
+        dependencies: [],
+        position: 0,
+      },
+    ]
+
+    localStorage.setItem(
+      'ralph-tasks',
+      JSON.stringify({
+        state: {
+          tasks: mockTasks,
+          tasksByStatus: { [TaskStatus.BACKLOG]: mockTasks },
+          tasksByParent: {},
+        },
+        version: 0,
+      })
+    )
+
+    const { result } = renderHook(() => useTaskStore())
+
+    expect(result.current.tasks).toHaveLength(1)
+    expect(result.current.tasks[0].id).toBe('existing-1')
+    expect(result.current.tasks[0].title).toBe('EXISTING TASK')
   })
 
   it('should store data in localStorage with correct key', () => {
