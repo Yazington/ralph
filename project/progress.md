@@ -111,3 +111,35 @@ Starting: Initialize Vite + React + TypeScript project
 - TypeScript test files need both DOM and Node.js types
 - tsconfig.app.json needs "types": ["vite/client", "node"] to access both browser and Node.js APIs
 - ESM requires using import.meta.url and fileURLToPath instead of __dirname
+
+---
+
+### Task Completion (2026-01-31 21:02)
+✓ Task: Set up shadcn/ui (install base components, then customize to match design system)
+- Added baseUrl and paths to tsconfig.json for @/* alias
+- Added baseUrl and paths to tsconfig.app.json for @/* alias
+- Updated vite.config.ts with path alias resolution
+- Initialized shadcn/ui with `pnpm dlx shadcn@latest init --yes --defaults`
+- Created components.json with new-york style, lucide icons, neutral base color
+- Created lib/utils.ts with cn utility function (clsx + tailwind-merge)
+- Updated index.css with shadcn/ui CSS variables and @theme inline section
+- Added shadcn/ui dependencies: class-variance-authority, clsx, lucide-react, tailwind-merge, tw-animate-css
+- Created unbiased unit tests in src/shadcn-setup.test.ts:
+  * Tests components.json configuration
+  * Tests TypeScript path aliases
+  * Tests vite.config.ts path alias
+  * Tests lib/utils.ts cn function
+  * Tests all required dependencies
+  * Tests CSS variables in index.css
+- All 30 tests pass (total 30 tests across 4 test files)
+- Build completes without errors
+- Lint passes with no issues
+- Committed changes: b77018e, b914e9a
+
+### Key Learnings
+- Shadcn/ui initialization command: `pnpm dlx shadcn@latest init --yes --defaults`
+- tsconfig.app.json uses JSONC (JSON with Comments), cannot be parsed with JSON.parse()
+- Shadcn/ui adds CSS variables for theming in both light and dark modes
+- cn utility function combines clsx and tailwind-merge for className handling
+- Lucide React is the default icon library for shadcn/ui
+- Tailwind CSS v4 integrates seamlessly with shadcn/ui's CSS variable system
