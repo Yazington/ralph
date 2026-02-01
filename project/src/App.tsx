@@ -427,7 +427,7 @@ export default function App() {
   };
 
   return (
-    <main className="min-h-screen bg-[#090B0D] flex items-center justify-center p-4">
+    <main className="min-h-screen bg-[#090B0D] flex items-center justify-center p-4 sm:p-8">
       <div className="w-full max-w-2xl rounded-panel border border-[#2B2C2D] bg-[#0B1013] shadow-xl overflow-hidden">
         <header className="p-6 border-b border-[#2B2C2D66]">
           <h1 className="text-3xl font-semibold text-[#B5D7CD]">Calm Tasks</h1>

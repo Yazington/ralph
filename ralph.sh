@@ -70,38 +70,25 @@ muted() { printf "%b\n" "${C_DIM}$*${C_RESET}"; }
 
 ansi_to_html() {
     local text="$1"
-    text="${text//\&/\&amp;}"
-    text="${text//</\&lt;}"
-    text="${text//>/\&gt;}"
-    text="${text//\"/\&quot;}"
-    text="${text//\\/\\\\}"
-    text="${text//\'/\\\'}"
-    while [[ "$text" =~ $'\x1b'\[([0-9;]+)m(.*)$'\x1b'\[0m(.*) ]]; do
-        local codes="${BASH_REMATCH[1]}"
-        local content="${BASH_REMATCH[2]}"
-        local rest="${BASH_REMATCH[3]}"
-        local classes=""
-        IFS=';' read -ra CODE_ARRAY <<< "$codes"
-        for code in "${CODE_ARRAY[@]}"; do
-            case "$code" in
-                0) classes="" ;;
-                1) classes="${classes} bold" ;;
-                2) classes="${classes} dim" ;;
-                31) classes="${classes} red" ;;
-                32) classes="${classes} green" ;;
-                33) classes="${classes} yellow" ;;
-                34) classes="${classes} blue" ;;
-                36) classes="${classes} cyan" ;;
-                35|37) classes="${classes} magenta" ;;
-            esac
-        done
-        if [[ -n "$classes" ]]; then
-            text="<span class=\"$classes\">$content</span>$rest"
-        else
-            text="$content$rest"
-        fi
-    done
-    [[ -n "$text" ]] && printf '%s\n' "$text" | sed 's/$/<br>/'
+    text=$(printf '%s' "$text" | sed 's/&/\&amp;/g; s/</\&lt;/g; s/>/\&gt;/g; s/"/\&quot;/g; s/'"'"'/\&#39;/g')
+    text=$(printf '%s' "$text" | sed -e 's/\x1b\[0m/<\/span>/g' \
+        -e 's/\x1b\[1m/<span class="bold">/g' \
+        -e 's/\x1b\[2m/<span class="dim">/g' \
+        -e 's/\x1b\[31m/<span class="red">/g' \
+        -e 's/\x1b\[32m/<span class="green">/g' \
+        -e 's/\x1b\[33m/<span class="yellow">/g' \
+        -e 's/\x1b\[34m/<span class="blue">/g' \
+        -e 's/\x1b\[36m/<span class="cyan">/g' \
+        -e 's/\x1b\[35m/<span class="magenta">/g' \
+        -e 's/\x1b\[37m/<span class="white">/g' \
+        -e 's/\x1b\[90m/<span class="dim">/g' \
+        -e 's/\x1b\[91m/<span class="red">/g' \
+        -e 's/\x1b\[92m/<span class="green">/g' \
+        -e 's/\x1b\[93m/<span class="yellow">/g' \
+        -e 's/\x1b\[94m/<span class="blue">/g' \
+        -e 's/\x1b\[96m/<span class="cyan">/g' \
+        -e 's/\x1b\[95m/<span class="magenta">/g')
+    printf '<div class="log-line">%s</div>\n' "$text"
 }
 
 info "Starting loop..."
@@ -116,10 +103,13 @@ STATUS_FILE="$LOG_DIR/status.md"
 PROMPT_FILE="$LOG_DIR/generic_prompt.md"
 OPENCODE_LOG_LEVEL="${OPENCODE_LOG_LEVEL:-WARN}"
 
+# Source logging utilities
+source "./.ralph/logging.sh"
+
 # ensure log dir exists; keep opencode stderr in a log file
 mkdir -p "$LOG_DIR"
 touch "$LOG_FILE"
-echo '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Ralph Logs</title><style>body{font-family:monospace;background:#1e1e1e;color:#d4d4d4;padding:20px}pre{white-space:pre-wrap;word-wrap:break-word}.red{color:#f87171}.green{color:#4ade80}.yellow{color:#facc15}.blue{color:#60a5fa}.cyan{color:#22d3ee}.magenta{color:#e879f9}.dim{opacity:0.6}.bold{font-weight:bold}.reset{}</style></head><body><pre id="log"></pre><script>' > "$HTML_LOG_FILE"
+init_html_log "$HTML_LOG_FILE"
 
 while true; do
     if [ $iteration -ge $MAX_ITERATIONS ]; then
@@ -166,3 +156,5 @@ while true; do
 
     iteration=$((iteration + 1))
 done
+
+echo '</script></body></html>' >> "$HTML_LOG_FILE"
