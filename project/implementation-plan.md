@@ -70,7 +70,7 @@ Phased rollout strategy for building the high-end TODO app with clear milestones
 
 ### Task CRUD Operations
 
-[ ] Implement addTask action
+[x] Implement addTask action
 [ ] Implement updateTask action
 [ ] Implement deleteTask action
 [ ] Implement duplicateTask action

@@ -437,3 +437,22 @@ Starting: Customize Button for design system (uppercase, colors, variants)
 - The typed initializer pattern uses `create<State>()(immer((set) => ({ ... })))`
 - Mutating the Immer draft keeps previous state references unchanged
 - Context7 query for Zustand docs hit token threshold; used Zustand docs via web instead
+
+---
+
+## 2026-01-31 23:20
+
+### Task Completion
+✓ Task: Implement addTask action
+- Added `addTask` action to `src/store/task-store.ts` with derived state rebuild helper
+- `addTask` appends tasks and refreshes status/parent maps to keep store state consistent
+- Added unbiased unit tests in `src/task-store-add-task.test.ts`
+- Tests pass (`pnpm test:run -- task-store-add-task.test.ts` ran full suite: 149 tests)
+- Updated implementation-plan.md to mark task as completed
+
+### Key Learnings
+- Rebuilding derived maps after task mutations keeps status/parent views accurate
+- Immer-backed store actions do not mutate previous state snapshots
+
+### Session Note
+- Context7 resolve call failed due to token threshold; used Tavily search to reference Zustand persist docs

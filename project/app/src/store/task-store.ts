@@ -12,6 +12,7 @@ export interface TaskStoreState {
 }
 
 export interface TaskStoreActions {
+  addTask: (task: Task) => void
   setTasks: (tasks: Task[]) => void
 }
 
@@ -23,14 +24,23 @@ export const createTaskStoreState = (tasks: Task[] = []): TaskStoreState => ({
   tasksByParent: createTasksByParent(tasks),
 })
 
+const rebuildDerivedState = (state: TaskStoreState) => {
+  state.tasksByStatus = createTasksByStatus(state.tasks)
+  state.tasksByParent = createTasksByParent(state.tasks)
+}
+
 export const useTaskStore = create<TaskStore>()(
   immer((set) => ({
     ...createTaskStoreState(),
+    addTask: (task) =>
+      set((state) => {
+        state.tasks.push(task)
+        rebuildDerivedState(state)
+      }),
     setTasks: (tasks) =>
       set((state) => {
         state.tasks = tasks
-        state.tasksByStatus = createTasksByStatus(tasks)
-        state.tasksByParent = createTasksByParent(tasks)
+        rebuildDerivedState(state)
       }),
   })),
 )
