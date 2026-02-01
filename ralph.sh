@@ -115,20 +115,8 @@ while true; do
     prompt=$(cat "$PROMPT_FILE")
     
     info "Executing build..."
-    result=$(
-        OPENCODE_PERMISSION="$OPENCODE_PERMISSION" \
-        TERM=dumb NO_COLOR=1 \
-        (
-            opencode run --agent build -m zai-coding-plan/glm-4.7 --log-level "$OPENCODE_LOG_LEVEL" "$prompt" \
-            | python -c "import sys,strip_ansi; sys.stdout.write(strip_ansi.strip_ansi(sys.stdin.read()))" \
-            | tr -d '\000' \
-            | tee -a "$LOG_FILE"
-        ) \
-        2> >(python -c "import sys,strip_ansi; sys.stdout.write(strip_ansi.strip_ansi(sys.stdin.read()))" \
-            | tr -d '\000' >>"$LOG_FILE")
-    )
-    echo "Result:"
-    echo "$result"
+    OPENCODE_PERMISSION="$OPENCODE_PERMISSION" \
+    opencode run --print-logs --agent build -m zai-coding-plan/glm-4.7 --log-level "$OPENCODE_LOG_LEVEL" "$prompt"
     echo
 
     iteration=$((iteration + 1))
