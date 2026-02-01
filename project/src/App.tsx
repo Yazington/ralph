@@ -4,7 +4,6 @@ import {
   TaskFilter,
   createTask,
   addTask,
-  removeTask,
   updateTask,
   toggleTaskCompletion,
   filterTasks,
@@ -18,6 +17,10 @@ import {
 import { reorderTasksByDrag, deriveStackedTaskPlan } from '@domain/drag-and-drop';
 import { planFontLoading } from '@domain/typography';
 import { loadFontsFromPlan } from './typography/load-fonts';
+import {
+  deriveInputFeedback,
+  scheduleDeletionWithUndo,
+} from '@domain/feedback-state';
 
 const fontPlans = planFontLoading();
 
@@ -31,16 +34,22 @@ function getTimestamp(): string {
 
 interface ComposerProps {
   onAddTask: (title: string) => void;
+  attemptedEmptySubmit: boolean;
+  onResetAttempt: () => void;
 }
 
-function Composer({ onAddTask }: ComposerProps) {
+function Composer({ onAddTask, attemptedEmptySubmit, onResetAttempt }: ComposerProps) {
   const [value, setValue] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const focusRing = deriveFocusRing(isFocused);
+  const inputFeedback = deriveInputFeedback(value, attemptedEmptySubmit);
 
   const handleSubmit = () => {
+    if (!inputFeedback.canSubmit) {
+      return;
+    }
     const plan = planComposerKeyAction('Enter', value);
     if (plan.shouldSubmit && plan.trimmedValue) {
       onAddTask(plan.trimmedValue);
@@ -55,31 +64,53 @@ function Composer({ onAddTask }: ComposerProps) {
     }
   };
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setValue(e.target.value);
+    if (attemptedEmptySubmit) {
+      onResetAttempt();
+    }
+  };
+
   return (
-    <div className="flex gap-3 p-4 border-b border-[#2B2C2D66]">
-      <input
-        ref={inputRef}
-        type="text"
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        onKeyDown={handleKeyDown}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
-        placeholder="Add a new task..."
-        className="flex-1 bg-[#0B1013] text-[#B5D7CD] placeholder-[#6A8F96] rounded-lg px-4 py-3 outline-none transition-all duration-200"
-        style={{
-          border: focusRing.visible ? `2px solid ${focusRing.color}` : '1px solid #2B2C2D',
-          boxShadow: focusRing.visible ? `0 0 0 ${focusRing.offsetPx}px ${focusRing.color}40` : 'none',
-        }}
-      />
-      <button
-        type="button"
-        onClick={handleSubmit}
-        disabled={!value.trim()}
-        className="px-6 py-3 bg-[#132E2C] text-[#B5D7CD] rounded-lg font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#132E2C80] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7299A2]"
-      >
-        Add
-      </button>
+    <div className="flex flex-col gap-3 p-4 border-b border-[#2B2C2D66]">
+      <div className="flex gap-3">
+        <div className="flex-1">
+          <input
+            ref={inputRef}
+            type="text"
+            value={value}
+            onChange={handleChange}
+            onKeyDown={handleKeyDown}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
+            placeholder="Add a new task..."
+            className="w-full bg-[#0B1013] text-[#B5D7CD] placeholder-[#6A8F96] rounded-lg px-4 py-3 outline-none transition-all duration-200"
+            style={{
+              border: inputFeedback.kind === 'inputError'
+                ? '1px solid #7299A2'
+                : focusRing.visible
+                ? `2px solid ${focusRing.color}`
+                : '1px solid #2B2C2D',
+              boxShadow: inputFeedback.kind === 'inputError'
+                ? `0 0 0 2px #7299A240`
+                : focusRing.visible
+                ? `0 0 0 ${focusRing.offsetPx}px ${focusRing.color}40`
+                : 'none',
+            }}
+          />
+          {inputFeedback.kind === 'inputError' && inputFeedback.helperText && (
+            <p className="mt-2 text-sm text-[#6A8F96]">{inputFeedback.helperText}</p>
+          )}
+        </div>
+        <button
+          type="button"
+          onClick={handleSubmit}
+          disabled={!inputFeedback.canSubmit}
+          className="px-6 py-3 bg-[#132E2C] text-[#B5D7CD] rounded-lg font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#132E2C80] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7299A2]"
+        >
+          Add
+        </button>
+      </div>
     </div>
   );
 }
@@ -261,10 +292,49 @@ function Footer({ filter, activeCount, onFilterChange }: FooterProps) {
   );
 }
 
+interface ToastProps {
+  message: string;
+  onUndo: () => void;
+  onDismiss: () => void;
+}
+
+function Toast({ message, onUndo, onDismiss }: ToastProps) {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onDismiss();
+    }, 5000);
+
+    return () => clearTimeout(timer);
+  }, [onDismiss]);
+
+  return (
+    <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-[#101D1E] border border-[#2B2C2D] rounded-lg px-4 py-3 flex items-center gap-4 shadow-xl animate-in slide-in-from-bottom-4 duration-300">
+      <span className="text-sm text-[#B5D7CD]">{message}</span>
+      <button
+        type="button"
+        onClick={onUndo}
+        className="text-sm text-[#7299A2] hover:text-[#B5D7CD] font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7299A2]"
+      >
+        Undo
+      </button>
+      <button
+        type="button"
+        onClick={onDismiss}
+        className="text-sm text-[#6A8F96] hover:text-[#B5D7CD] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#7299A2]"
+        aria-label="Dismiss"
+      >
+        ×
+      </button>
+    </div>
+  );
+}
+
 export default function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [filter, setFilter] = useState<TaskFilter>('all');
   const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
+  const [attemptedEmptySubmit, setAttemptedEmptySubmit] = useState(false);
+  const [activeToast, setActiveToast] = useState<{ message: string; taskSnapshot: Task } | null>(null);
 
   useEffect(() => {
     void loadFontsFromPlan(fontPlans);
@@ -274,17 +344,6 @@ export default function App() {
   const activeTasks = tasks.filter((t) => !t.completed);
   const emptyState = deriveEmptyState(tasks, filter);
   const stackedPlan = deriveStackedTaskPlan(filteredTasks);
-
-  const handleAddTask = (title: string) => {
-    const newTask = createTask({
-      id: generateId(),
-      title,
-      createdAt: getTimestamp(),
-      updatedAt: getTimestamp(),
-      order: tasks.length,
-    });
-    setTasks(addTask(tasks, newTask));
-  };
 
   const handleToggleComplete = (taskId: string) => {
     const updated = toggleTaskCompletion(tasks, taskId, getTimestamp());
@@ -303,8 +362,45 @@ export default function App() {
   };
 
   const handleDeleteTask = (taskId: string) => {
-    const updated = removeTask(tasks, taskId);
-    setTasks(updated);
+    const deletionPlan = scheduleDeletionWithUndo(tasks, taskId, getTimestamp());
+    setTasks(deletionPlan.nextTasks);
+
+    if (deletionPlan.toast.taskSnapshot) {
+      setActiveToast({
+        message: deletionPlan.toast.message,
+        taskSnapshot: deletionPlan.toast.taskSnapshot,
+      });
+    }
+  };
+
+  const handleUndo = () => {
+    if (activeToast?.taskSnapshot) {
+      setTasks((prev) => {
+        const updated = addTask(prev, activeToast.taskSnapshot);
+        return updated.sort((a, b) => {
+          if (a.completed !== b.completed) {
+            return a.completed ? 1 : -1;
+          }
+          return a.order - b.order;
+        }).map((task, index) => ({ ...task, order: index }));
+      });
+      setActiveToast(null);
+    }
+  };
+
+  const handleDismissToast = () => {
+    setActiveToast(null);
+  };
+
+  const handleAddTask = (title: string) => {
+    const newTask = createTask({
+      id: generateId(),
+      title,
+      createdAt: getTimestamp(),
+      updatedAt: getTimestamp(),
+      order: tasks.length,
+    });
+    setTasks(addTask(tasks, newTask));
   };
 
   const handleDragStart = (taskId: string) => {
@@ -338,7 +434,11 @@ export default function App() {
           <p className="text-[#6A8F96] mt-2">A tranquil place to organize your day</p>
         </header>
 
-        <Composer onAddTask={handleAddTask} />
+        <Composer
+          onAddTask={handleAddTask}
+          attemptedEmptySubmit={attemptedEmptySubmit}
+          onResetAttempt={() => setAttemptedEmptySubmit(false)}
+        />
 
         {emptyState ? (
           <div className="p-8 text-center">
@@ -373,6 +473,14 @@ export default function App() {
 
         <Footer filter={filter} activeCount={activeTasks.length} onFilterChange={setFilter} />
       </div>
+
+      {activeToast && (
+        <Toast
+          message={activeToast.message}
+          onUndo={handleUndo}
+          onDismiss={handleDismissToast}
+        />
+      )}
     </main>
   );
 }

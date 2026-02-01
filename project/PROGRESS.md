@@ -46,3 +46,6 @@
 - Added drag-and-drop using HTML5 drag API with reorderTasksByDrag helper, ensuring completed items stack below active ones via deriveStackedTaskPlan offsets.
 - Integrated domain helpers: task operations, interactions planning (Enter/Escape keys), focus rings using accent cyan, and filtering by All/Active/Completed.
 - Removed viewport presets and showcase panels to keep the UI calm and focused solely on the TODO experience per spec.
+- Integrated feedback states (spec 0011) into the UI: Composer now uses deriveInputFeedback to show subtle error borders and helper text when attempting to submit empty tasks.
+- Implemented delete with undo toast using scheduleDeletionWithUndo helper; tasks are removed immediately with a 5-second undo toast that auto-dismisses or can be manually dismissed.
+- Added Toast component with calm aesthetic (muted background, accent cyan undo button) that slides in from bottom; toast restores deleted task when Undo is clicked, maintaining task order and completion status.
