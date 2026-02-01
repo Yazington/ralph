@@ -503,3 +503,29 @@ Starting: Customize Button for design system (uppercase, colors, variants)
 ### Key Learnings
 - `pnpm test:run -- <file>` runs the full suite; `pnpm exec vitest run <file>` scopes to the file
 - Using a parent map simplifies collecting all descendant task ids for cascade deletes
+
+---
+
+## 2026-01-31 23:57
+
+### Session Note
+- Read tool hit token threshold while opening `src/index.css`; re-read with smaller limit
+
+### Task Started
+[~] Task: Update App.tsx to use current components/hooks/modules
+- Reviewed shadcn/ui component docs for Card, Input, and Badge usage via web search
+- Marked implementation-plan.md task as in progress
+
+### Task Completion
+✓ Task: Update App.tsx to use current components/hooks/modules
+- Replaced Vite starter UI with a dashboard preview using Panel, Card, Button, Input, Select, Badge, Label, and Chip components plus lucide icons
+- Seeded the Zustand store from App and grouped filtered tasks with `createTasksByStatus`
+- Added search, status filter, and view mode state to demonstrate hooks and modules
+- Added quick stats and active filters panels with design-system styling and motion classes
+- Updated App unit tests to cover header, controls, status columns, seeded tasks, and document title
+- Tests: `pnpm exec vitest run src/test/App.test.tsx`
+
+### Key Learnings
+- Radix Select triggers can be labeled via `Label` + `htmlFor` because they render buttons
+- `createTasksByStatus` is reusable for filtered arrays beyond the store derived state
+- Seeding the store only when empty avoids overwriting future persisted data

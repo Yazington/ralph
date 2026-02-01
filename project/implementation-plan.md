@@ -57,7 +57,7 @@ Phased rollout strategy for building the high-end TODO app with clear milestones
 
 ---
 
-[ ] HIGH PRIORITY: update App.tsx to use the different components/hooks/modules and dependencies we have so far.
+[x] HIGH PRIORITY: update App.tsx to use the different components/hooks/modules and dependencies we have so far.
 
 ## Phase 2: Data Layer
 
