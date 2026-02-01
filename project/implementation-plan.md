@@ -34,8 +34,8 @@ Phased rollout strategy for building the high-end TODO app with clear milestones
 ### Base UI Components
 
 [x] Install shadcn/ui Button component
-[ ] Customize Button for design system (uppercase, colors, variants)
-[ ] Create Panel/Card component (custom, extend shadcn patterns)
+[x] Customize Button for design system (uppercase, colors, variants)
+[x] Create Panel/Card component (custom, extend shadcn patterns)
 [ ] Install shadcn/ui Input component
 [ ] Customize Input for design system (uppercase placeholder, colors)
 [ ] Install shadcn/ui Select component
