@@ -13,6 +13,7 @@ export interface TaskStoreState {
 
 export interface TaskStoreActions {
   addTask: (task: Task) => void
+  updateTask: (id: string, updates: Partial<Task>) => void
   setTasks: (tasks: Task[]) => void
 }
 
@@ -35,6 +36,19 @@ export const useTaskStore = create<TaskStore>()(
     addTask: (task) =>
       set((state) => {
         state.tasks.push(task)
+        rebuildDerivedState(state)
+      }),
+    updateTask: (id, updates) =>
+      set((state) => {
+        const task = state.tasks.find((candidate) => candidate.id === id)
+
+        if (!task) {
+          return
+        }
+
+        const { id: _ignoredId, ...safeUpdates } = updates
+
+        Object.assign(task, safeUpdates)
         rebuildDerivedState(state)
       }),
     setTasks: (tasks) =>

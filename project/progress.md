@@ -456,3 +456,26 @@ Starting: Customize Button for design system (uppercase, colors, variants)
 
 ### Session Note
 - Context7 resolve call failed due to token threshold; used Tavily search to reference Zustand persist docs
+
+---
+
+## 2026-01-31 23:55
+
+### Session Note
+- Read tool hit token threshold while opening `src/task-store-add-task.test.ts`; will re-read with smaller requests
+
+---
+
+## 2026-01-31 23:59
+
+### Task Completion
+✓ Task: Implement updateTask action
+- Added `updateTask` action in `src/store/task-store.ts` to merge updates and rebuild derived maps
+- Ignored `id` updates to keep task identifiers immutable
+- Added unbiased unit tests in `src/task-store-update-task.test.ts`
+- Tests pass (`pnpm test:run -- task-store-update-task.test.ts` ran full suite: 152 tests)
+- Updated implementation-plan.md to mark task as completed
+
+### Key Learnings
+- With Zustand + Immer, updating a task can use draft mutation plus derived map rebuilds
+- Guarding against `id` changes keeps updates safe until formal validation is added
