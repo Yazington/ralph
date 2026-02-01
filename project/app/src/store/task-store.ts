@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
+import { persist } from 'zustand/middleware/persist'
 
 import {
   collectTaskSubtreeIds,
@@ -24,65 +25,67 @@ export interface TaskStoreActions {
 
 export type TaskStore = TaskStoreState & TaskStoreActions
 
-export const createTaskStoreState = (tasks: Task[] = []): TaskStoreState => ({
-  tasks,
-  tasksByStatus: createTasksByStatus(tasks),
-  tasksByParent: createTasksByParent(tasks),
-})
-
 const rebuildDerivedState = (state: TaskStoreState) => {
   state.tasksByStatus = createTasksByStatus(state.tasks)
   state.tasksByParent = createTasksByParent(state.tasks)
 }
 
 export const useTaskStore = create<TaskStore>()(
-  immer((set) => ({
-    ...createTaskStoreState(),
-    addTask: (task) =>
-      set((state) => {
-        state.tasks.push(task)
-        rebuildDerivedState(state)
-      }),
-    updateTask: (id, updates) =>
-      set((state) => {
-        const task = state.tasks.find((candidate) => candidate.id === id)
+  persist(
+    immer(set => ({
+      tasks: [],
+      tasksByStatus: createTasksByStatus([]),
+      tasksByParent: createTasksByParent({}),
+      addTask: task =>
+        set(state => {
+          state.tasks.push(task)
+          rebuildDerivedState(state)
+        }),
+      updateTask: (id, updates) =>
+        set(state => {
+          const task = state.tasks.find(candidate => candidate.id === id)
 
-        if (!task) {
-          return
-        }
+          if (!task) {
+            return
+          }
 
-        const { id: _ignoredId, ...safeUpdates } = updates
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { id: _ignoredId, ...safeUpdates } = updates
 
-        Object.assign(task, safeUpdates)
-        rebuildDerivedState(state)
-      }),
-    deleteTask: (id, cascade) =>
-      set((state) => {
-        const hasTask = state.tasks.some((task) => task.id === id)
+          Object.assign(task, safeUpdates)
+          rebuildDerivedState(state)
+        }),
+      deleteTask: (id, cascade) =>
+        set(state => {
+          const hasTask = state.tasks.some(task => task.id === id)
 
-        if (!hasTask) {
-          return
-        }
+          if (!hasTask) {
+            return
+          }
 
-        if (cascade) {
-          const idsToDelete = collectTaskSubtreeIds(state.tasks, id)
-          state.tasks = state.tasks.filter((task) => !idsToDelete.has(task.id))
-        } else {
-          state.tasks.forEach((task) => {
-            if (task.parentId === id) {
-              task.parentId = null
-            }
-          })
+          if (cascade) {
+            const idsToDelete = collectTaskSubtreeIds(state.tasks, id)
+            state.tasks = state.tasks.filter(task => !idsToDelete.has(task.id))
+          } else {
+            state.tasks.forEach(task => {
+              if (task.parentId === id) {
+                task.parentId = null
+              }
+            })
 
-          state.tasks = state.tasks.filter((task) => task.id !== id)
-        }
+            state.tasks = state.tasks.filter(task => task.id !== id)
+          }
 
-        rebuildDerivedState(state)
-      }),
-    setTasks: (tasks) =>
-      set((state) => {
-        state.tasks = tasks
-        rebuildDerivedState(state)
-      }),
-  })),
+          rebuildDerivedState(state)
+        }),
+      setTasks: tasks =>
+        set(state => {
+          state.tasks = tasks
+          rebuildDerivedState(state)
+        }),
+    })),
+    {
+      name: 'ralph-tasks',
+    },
+  ),
 )
